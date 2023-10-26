@@ -88,4 +88,4 @@ model.fit(
         lr_reduction
     ]
 )
-model.save("convnext_tiny.keras")
+model.save("convnext_small.keras")
