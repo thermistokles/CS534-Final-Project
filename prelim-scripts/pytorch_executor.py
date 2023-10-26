@@ -182,7 +182,7 @@ def data_preprocessing():
     testDataLoader = DataLoader(testDataSet, shuffle=False)
 
 
-# TODO: Needs hyperparameter tuning, most of the implementation comes from second reference
+# TODO: Needs hyperparameter tuning, most of the implementation comes from first reference
 def train_model(model=fastvit.fastvit_ma36(), specifier="fastvit"):
     if model is not None:
         m_best_weights = copy.deepcopy(model.state_dict())
