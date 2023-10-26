@@ -1,0 +1,9 @@
+# ConvNeXT V2, InceptionNeXT, FastViT, and RepViT:
+pip install git+https://github.com/huggingface/pytorch-image-models
+8e61274
+
+# FasterViT:
+pip install git+https://github.com/NVlabs/FasterViT
+
+# cv2
+pip install opencv-python
