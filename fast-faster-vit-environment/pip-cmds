@@ -4,6 +4,3 @@ pip install git+https://github.com/huggingface/pytorch-image-models
 
 # FasterViT:
 pip install git+https://github.com/NVlabs/FasterViT
-
-# cv2
-pip install opencv-python

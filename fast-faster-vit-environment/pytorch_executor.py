@@ -15,7 +15,6 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import os
-import cv2
 import sklearn as skl
 import timm
 import torch.cuda
@@ -35,11 +34,13 @@ from tqdm import tqdm
 import timm.models.fastvit as fastvit
 import fastervit.models.faster_vit as fastervit
 
-# Machine-specific variables
+# TODO: to be converted to command-line arguments
+full_image_path = "..\\data\\siim-acr-pneumothorax\\"
 
+# Machine-specific variables
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 seed = 42
-num_epochs = 100
+num_epochs = 1  # 100
 image_resize = 224
 
 # Timm variables
@@ -102,8 +103,8 @@ def data_preprocessing():
     Load and preprocess data
     :return: (void)
     """
-    masks_exp = "png_masks"
-    raw_images_exp = "png_images"
+    masks_exp = full_image_path + "png_masks"
+    raw_images_exp = full_image_path + "png_images"
 
     # Masks
     mfiles = []
@@ -156,6 +157,7 @@ def data_preprocessing():
     train_images, val_images, train_labels, val_labels = skl.model_selection.train_test_split(
             total_train_data["path"].tolist(),
             total_train_data["has_pneumo"].tolist(),
+            stratify=total_train_data["has_pneumo"].tolist(),
             train_size=0.9)
 
     # Initialize timm-specific fields
@@ -212,7 +214,7 @@ def train_model(model=fastvit.fastvit_ma36(), specifier="fastvit"):
 
                     with torch.set_grad_enabled(phase == "train"):
                         outputs = model(inputs)
-                        loss = loss_fcn(inputs, labels)
+                        loss = loss_fcn(outputs, labels)
 
                         _, preds = torch.max(outputs, 1)
 
@@ -250,7 +252,7 @@ def main():
     
     """
 
-    # train_model()
+    train_model()
     # train_model(fastervit.faster_vit_6_224(), "fastervit")
     pass
 
