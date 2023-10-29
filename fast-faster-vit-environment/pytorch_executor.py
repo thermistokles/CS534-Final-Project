@@ -162,7 +162,7 @@ def data_preprocessing():
         total_train_data = pd.merge(df, total_train_data.loc[total_train_data["has_pneumo"] == 0], how="outer")
         pass
 
-    total_train_data = total_train_data.sample(random_state=seed, frac=0.1)  # TODO: frac=1
+    total_train_data = total_train_data.sample(random_state=seed, frac=1)
     train_images, val_images, train_labels, val_labels = skl.model_selection.train_test_split(
         total_train_data["path"].tolist(),
         total_train_data["has_pneumo"].tolist(),
