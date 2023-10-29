@@ -111,8 +111,8 @@ def data_preprocessing():
     Load and preprocess data
     :return: (void)
     """
-    masks_exp = full_image_path + "\\png_masks"
-    raw_images_exp = full_image_path + "\\png_images"
+    masks_exp = full_image_path + "/png_masks"
+    raw_images_exp = full_image_path + "/png_images"
 
     # Masks
     mfiles = []
@@ -138,8 +138,8 @@ def data_preprocessing():
 
     # Allocate format dataframes
 
-    total_train_data = pd.read_csv(full_image_path + "\\stage_1_train_images.csv")
-    test_image_data = pd.read_csv(full_image_path + "\\stage_1_test_images.csv")
+    total_train_data = pd.read_csv(full_image_path + "/stage_1_train_images.csv")
+    test_image_data = pd.read_csv(full_image_path + "/stage_1_test_images.csv")
 
     total_train_data["path"] = total_train_data["new_filename"].apply(lambda x: os.path.join(raw_images_exp, x))
     total_train_data["mpath"] = total_train_data["new_filename"].apply(lambda x: os.path.join(masks_exp, x))
