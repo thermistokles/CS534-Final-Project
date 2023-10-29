@@ -9,38 +9,48 @@ Notable References:
 
 
 """
+import argparse
 import copy
+import traceback
 
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import os
+import seaborn as sb
 import sklearn as skl
-import timm
+import torch.nn as nn
 import torch.cuda
 import albumentations
 import albumentations.pytorch
 
 from PIL import Image
 from timm import utils
-from timm.data import create_dataset
-from timm.models import create_model
-from torch import nn
 from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 
 # Models
-import timm.models.fastvit as fastvit
-import fastervit.models.faster_vit as fastervit
+from timm.models import *
+from fastervit.models.faster_vit import *
 
-# TODO: to be converted to command-line arguments
-full_image_path = "..\\data\\siim-acr-pneumothorax\\"
+# Parse Arguments
+argParser = argparse.ArgumentParser()
+
+argParser.add_argument("-m", "--model", type=str, default="fastvit_ma36", help="Timm Model Specifier")
+argParser.add_argument("-p", "--path", type=str, default="..\\data\\siim-acr-pneumothorax", help="Images path")
+argParser.add_argument("-e", "--epochs", type=int, default=100, help="Number of epochs")
+argParser.add_argument("-o", "--output", type=str, default="\\output", help="Output directory")
+args = argParser.parse_args()
+
+full_image_path = args.path
+model_name = args.model
+num_epochs = args.epochs
+output_path = str(str(os.getcwd()) + args.output)
 
 # Machine-specific variables
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 seed = 42
-num_epochs = 1  # 100
 image_resize = 224
 
 # Timm variables
@@ -62,9 +72,9 @@ class STImageDataset(Dataset):
     Sequential Tensor Image Dataset
     """
 
-    def __init__(self, imageList, labelList, augmentation=None):
-        self.images = imageList
-        self.labels = labelList
+    def __init__(self, image_list, label_list, augmentation=None):
+        self.images = image_list
+        self.labels = label_list
         self.aug = augmentation
 
     def __len__(self):
@@ -86,7 +96,6 @@ def env_setup():
     Set up the application environment
     :return: (void)
     """
-    # TODO: Finalize
     if torch.cuda.is_available():
         torch.backends.cuda.matmul.allow_tf32 = True
         torch.backends.cudnn.benchmark = True
@@ -103,8 +112,8 @@ def data_preprocessing():
     Load and preprocess data
     :return: (void)
     """
-    masks_exp = full_image_path + "png_masks"
-    raw_images_exp = full_image_path + "png_images"
+    masks_exp = full_image_path + "\\png_masks"
+    raw_images_exp = full_image_path + "\\png_images"
 
     # Masks
     mfiles = []
@@ -130,14 +139,14 @@ def data_preprocessing():
 
     # Allocate format dataframes
 
-    total_train_data = pd.read_csv("../data/siim-acr-pneumothorax/stage_1_train_images.csv")
-    testImageData = pd.read_csv("../data/siim-acr-pneumothorax/stage_1_test_images.csv")
+    total_train_data = pd.read_csv(full_image_path + "\\stage_1_train_images.csv")
+    test_image_data = pd.read_csv(full_image_path + "\\stage_1_test_images.csv")
 
     total_train_data["path"] = total_train_data["new_filename"].apply(lambda x: os.path.join(raw_images_exp, x))
     total_train_data["mpath"] = total_train_data["new_filename"].apply(lambda x: os.path.join(masks_exp, x))
 
-    testImageData["path"] = testImageData["new_filename"].apply(lambda x: os.path.join(raw_images_exp, x))
-    testImageData["mpath"] = testImageData["new_filename"].apply(lambda x: os.path.join(masks_exp, x))
+    test_image_data["path"] = test_image_data["new_filename"].apply(lambda x: os.path.join(raw_images_exp, x))
+    test_image_data["mpath"] = test_image_data["new_filename"].apply(lambda x: os.path.join(masks_exp, x))
 
     # Symmetrize data types (same number of cases for having and not having pneumothorax)
     # TODO: Use Image Augmentation, 4000 images is probably not enough for a good model (maybe look into RandArgument)
@@ -153,12 +162,12 @@ def data_preprocessing():
         total_train_data = pd.merge(df, total_train_data.loc[total_train_data["has_pneumo"] == 0], how="outer")
         pass
 
-    total_train_data = total_train_data.sample(random_state=seed, frac=1)
+    total_train_data = total_train_data.sample(random_state=seed, frac=0.1)  # TODO: frac=1
     train_images, val_images, train_labels, val_labels = skl.model_selection.train_test_split(
-            total_train_data["path"].tolist(),
-            total_train_data["has_pneumo"].tolist(),
-            stratify=total_train_data["has_pneumo"].tolist(),
-            train_size=0.9)
+        total_train_data["path"].tolist(),
+        total_train_data["has_pneumo"].tolist(),
+        stratify=total_train_data["has_pneumo"].tolist(),
+        train_size=0.9)
 
     # Initialize timm-specific fields
     global trainDataSet
@@ -180,80 +189,160 @@ def data_preprocessing():
     validationDataSet = STImageDataset(val_images, val_labels, aug)
     validationDataLoader = DataLoader(validationDataSet, shuffle=False)
 
-    testDataSet = STImageDataset(testImageData["path"].tolist(), testImageData["has_pneumo"].tolist(), aug)
+    testDataSet = STImageDataset(test_image_data["path"].tolist(), test_image_data["has_pneumo"].tolist(), aug)
     testDataLoader = DataLoader(testDataSet, shuffle=False)
 
 
-# TODO: Needs hyperparameter tuning, most of the implementation comes from first reference
-def train_model(model=fastvit.fastvit_ma36(), specifier="fastvit"):
+# TODO: Needs hyperparameter tuning, most of the implementation comes from the first reference
+def train_model(model=None, specifier=""):
+    """
+    Trains the neural network model
+    :param model: neural network to train
+    :param specifier: model name used for saving results
+    :return: (void)
+    """
     if model is not None:
-        m_best_weights = copy.deepcopy(model.state_dict())
-        m_best_acc = 0
+        try:
 
-        model = model.to(device)
-        # Potential hyperparameters
-        optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
-        loss_fcn = nn.CrossEntropyLoss()
-        dataloaders = dict({"train": trainDataLoader, "validation": validationDataLoader})
+            print('-' * 20)
+            print("Training: " + specifier)
+            print('-' * 20 + '\n')
 
-        for epoch in range(num_epochs):
-            for phase in ["train", "validation"]:
-                if phase == "train":
-                    model.train()
-                else:
-                    model.eval()
+            m_best_weights = copy.deepcopy(model.state_dict())
+            m_best_acc = 0
 
-                running_loss = 0
-                running_corrects = 0
+            model = model.to(device)
 
-                for inputs, labels in tqdm(dataloaders[phase]):
-                    inputs = inputs.to(device)
-                    labels = labels.to(device)
+            optimizer = torch.optim.Adam(model.parameters())
+            loss_fcn = nn.CrossEntropyLoss()
+            dataloaders = dict({"train": trainDataLoader, "validation": validationDataLoader})
 
-                    optimizer.zero_grad()
+            for epoch in range(num_epochs):
 
-                    with torch.set_grad_enabled(phase == "train"):
-                        outputs = model(inputs)
-                        loss = loss_fcn(outputs, labels)
+                print('-' * 20)
+                print("Epoch: " + str(epoch + 1) + " out of " + str(num_epochs))
+                print('-' * 20)
 
-                        _, preds = torch.max(outputs, 1)
+                for phase in ["train", "validation"]:
+                    if phase == "train":
+                        model.train()
+                    else:
+                        model.eval()
 
-                        if phase == 'train':
-                            loss.backward()
-                            optimizer.step()
+                    running_loss = 0
+                    running_corrects = 0
 
-                    running_loss += loss.item() * inputs.size(0)
-                    running_corrects += torch.sum(preds == labels.data)
+                    for inputs, labels in tqdm(dataloaders[phase]):
+                        inputs = inputs.to(device)
+                        labels = labels.to(device)
 
-                epoch_loss = running_loss / len(dataloaders[phase].dataset)
-                epoch_acc = float(running_corrects) / len(dataloaders[phase].dataset)
+                        optimizer.zero_grad()
 
-                if phase == 'val' and epoch_acc >= m_best_acc:
-                    m_best_acc = epoch_acc
-                    m_best_weights = copy.deepcopy(model.state_dict())
+                        with torch.set_grad_enabled(phase == "train"):
+                            outputs = model(inputs)
+                            loss = loss_fcn(outputs, labels)
 
-        best_model_weights[specifier] = (m_best_weights, m_best_acc)
+                            _, predictions = torch.max(outputs, 1)
+
+                            if phase == "train":
+                                loss.backward()
+                                optimizer.step()
+
+                        running_loss += loss.item() * inputs.size(0)
+                        running_corrects += torch.sum(predictions == labels.data)
+
+                    epoch_loss = running_loss / len(dataloaders[phase].dataset)
+                    epoch_acc = running_corrects.double() / len(dataloaders[phase].dataset)
+
+                    print("\nEpoch Summary: {} Loss: {:.4f} Acc: {:.4f}".format(phase, epoch_loss, epoch_acc))
+
+                    if phase == "validation" and epoch_acc >= m_best_acc:
+                        m_best_acc = epoch_acc
+                        m_best_weights = copy.deepcopy(model.state_dict())
+
+            model.load_state_dict(m_best_weights)
+            best_model_weights[specifier] = (m_best_weights, m_best_acc)
+
+            print("Best validation accuracy: {:.4f}\n".format(m_best_acc))
+        except Exception:
+            print("[Error]: %s training failed due to an exception, exiting...\n" % specifier)
+            print("[Error]: Exception occurred during training")
+            traceback.print_exc()
+            exit(1)
         pass
     pass
 
 
+# Most of the implementation comes from first Reference
+def test_model(model=None, specifier=""):
+    """
+    Test the given trained model for final evaluation
+    :param model: neural network to test
+    :param specifier: model name
+    :return: (void)
+    """
+    if model is not None:
+        try:
+
+            print('-' * 20)
+            print("Testing: " + specifier)
+            print('-' * 20)
+
+            model.eval()
+
+            predictions = []
+            ground_truths = []
+
+            with torch.no_grad():
+                for img, label in tqdm(testDataLoader):
+                    output = torch.nn.functional.softmax(model(img.to(device)), dim=1)
+                    _, index = torch.topk(output, k=1, dim=1)
+                    predictions.append(index.flatten())
+                    ground_truths.append(label)
+
+            predictions = torch.cat(predictions)
+            ground_truths = torch.cat(ground_truths)
+
+            predictions = predictions.cpu().detach().numpy()
+            ground_truths = np.array(ground_truths)
+
+            print("\n%s accuracy: %.4f\n" % (specifier, skl.metrics.accuracy_score(ground_truths, predictions)))
+            print("%s f1-score: %.4f\n" % (specifier, skl.metrics.f1_score(ground_truths, predictions)))
+
+            # Confusion matrix
+            cm = skl.metrics.confusion_matrix(ground_truths, predictions, normalize="all")
+            print("Confusion Matrix:")
+            print(str(cm))
+        except:
+            print("[Error]: Exception occurred during testing:\n")
+            traceback.print_exc()
+    pass
+
+
 def main():
+    # Check cuda availability
+    cuda_info = "Cuda modules loaded." if torch.cuda.is_available() else "Cuda modules not loaded."
+
+    print("[Info]: " + cuda_info + '\n')
+
     env_setup()
     data_preprocessing()
 
     """
-    Highest accuracy yielding/slowest:
-    
-    fastvit.fastvit_ma36()
-    fastervit.faster_vit_6_224()
-    
     Probable Hyperparameters:
-    optimizer, drop rate, loss function, 
-    
+    batch size, learning rate, number of layers (just choose different variations of the neural network available) 
     """
+    model = create_model(model_name)
+    train_model(model, model_name)
 
-    train_model()
-    # train_model(fastervit.faster_vit_6_224(), "fastervit")
+    # Save the model
+    if not os.path.exists(output_path):
+        os.makedirs(output_path)
+
+    torch.save(model.state_dict(), f"{output_path}/{model_name}.pth")
+
+    # Test the model
+    test_model(model, model_name)
     pass
 
 

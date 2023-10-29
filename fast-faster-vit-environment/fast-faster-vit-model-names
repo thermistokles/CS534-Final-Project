@@ -1,0 +1,22 @@
+-- FastViT --
+fastvit_t8
+fastvit_t12
+fastvit_s12
+fastvit_sa12
+fastvit_sa24
+fastvit_sa36
+fastvit_ma36 --> Can be used on both the Turing Cluster and local machines for testing
+
+-- FasterViT --
+faster_vit_0_224 --> Use on local machines
+faster_vit_1_224
+faster_vit_2_224
+faster_vit_3_224
+faster_vit_4_224
+faster_vit_5_224
+faster_vit_6_224 --> Use on Turing Cluster
+
+faster_vit_4_21k_224
+faster_vit_4_21k_384
+faster_vit_4_21k_512
+faster_vit_4_21k_768
