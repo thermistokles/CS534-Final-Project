@@ -6,6 +6,9 @@ import matplotlib.pyplot as plt
 import os
 import cv2
 
+from keras.preprocessing.image import ImageDataGenerator
+load_model = tf.keras.models.load_model
+
 mfiles=[]
 mpaths = []
 for dirname, _, filenames in os.walk('png_masks'):
@@ -37,8 +40,8 @@ for image in imageData.path:
 
 npImageList = np.array(imageList)
 
-model = tf.keras.applications.ConvNeXtTiny(
-    model_name="convnext_tiny",
+model = tf.keras.applications.ConvNeXtSmall(
+    model_name="convnext_small",
     include_top=True,
     include_preprocessing=True,
     weights=None,
@@ -72,11 +75,12 @@ lr_reduction = keras.callbacks.ReduceLROnPlateau(
     patience=3, 
     verbose=1 
 )
+aug = ImageDataGenerator(rotation_range=20, zoom_range=0.15, fill_mode="nearest")
 
 model.summary()
 model.fit(
-    trainingData,
-    label_training,
+    aug.flow(trainingData,
+    label_training,batch_size=64),
     verbose=1,
     epochs=10000,
     validation_data=[
@@ -88,4 +92,26 @@ model.fit(
         lr_reduction
     ]
 )
-model.save("convnext_tiny-compare.keras")
+MODEL_NAME = "convnext_small-augmented.keras"
+model.save(MODEL_NAME)
+
+model = load_model(MODEL_NAME)
+
+imageData=pd.read_csv('stage_1_test_images.csv')
+
+images='png_images'
+masks='png_masks'
+# label = has_pneumo
+imageData['label']=imageData['has_pneumo']
+imageData['path']=imageData['new_filename'].apply(lambda x:os.path.join(images,x))
+imageData['mpath']=imageData['new_filename'].apply(lambda x:os.path.join(masks,x))
+
+imageList = []
+for image in imageData.path:
+    imageList.append(cv2.resize(cv2.imread(image,cv2.IMREAD_COLOR),[224,224]))
+
+npImageList = np.array(imageList)
+ytest = keras.utils.to_categorical(imageData.label)
+
+test_loss,test_acc = model.evaluate(npImageList,ytest,verbose=1)
+print("Accuracy: "+str(test_acc)+", Loss: "+str(test_loss))

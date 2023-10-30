@@ -44,7 +44,7 @@ model = tf.keras.applications.ConvNeXtSmall(
     weights=None,
     input_tensor=None,
     input_shape=None,
-    pooling="max",
+    pooling=None,
     classes=2,
     classifier_activation="softmax",
 )

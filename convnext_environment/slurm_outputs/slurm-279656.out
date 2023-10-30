@@ -1,0 +1,917 @@
+2023-10-25 17:23:49.204973: I tensorflow/core/platform/cpu_feature_guard.cc:193] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  AVX2 AVX512F AVX512_VNNI FMA
+To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.
+2023-10-25 17:23:49.338329: I tensorflow/core/util/port.cc:104] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+2023-10-25 17:23:50.630616: W tensorflow/compiler/xla/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library 'libnvinfer.so.7'; dlerror: libnvinfer.so.7: cannot open shared object file: No such file or directory; LD_LIBRARY_PATH: /cm/shared/apps/cudnn8.5-cuda11.7/8.5.0.96/lib64:/cm/shared/apps/cudnn8.5-cuda11.7/8.5.0.96/lib:/cm/local/apps/cuda/libs/current/lib64:/cm/shared/apps/cuda11.7/toolkit/11.7.1/targets/x86_64-linux/lib:/cm/shared/spack/opt/spack/linux-ubuntu20.04-x86_64/gcc-12.1.0/python-3.8.13-slu6jvwlh43vemachntuxtqyqbxpltdg/lib:/cm/shared/apps/slurm/current/lib64/slurm:/cm/shared/apps/slurm/current/lib64
+2023-10-25 17:23:50.630710: W tensorflow/compiler/xla/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library 'libnvinfer_plugin.so.7'; dlerror: libnvinfer_plugin.so.7: cannot open shared object file: No such file or directory; LD_LIBRARY_PATH: /cm/shared/apps/cudnn8.5-cuda11.7/8.5.0.96/lib64:/cm/shared/apps/cudnn8.5-cuda11.7/8.5.0.96/lib:/cm/local/apps/cuda/libs/current/lib64:/cm/shared/apps/cuda11.7/toolkit/11.7.1/targets/x86_64-linux/lib:/cm/shared/spack/opt/spack/linux-ubuntu20.04-x86_64/gcc-12.1.0/python-3.8.13-slu6jvwlh43vemachntuxtqyqbxpltdg/lib:/cm/shared/apps/slurm/current/lib64/slurm:/cm/shared/apps/slurm/current/lib64
+2023-10-25 17:23:50.630718: W tensorflow/compiler/tf2tensorrt/utils/py_utils.cc:38] TF-TRT Warning: Cannot dlopen some TensorRT libraries. If you would like to use Nvidia GPU with TensorRT, please make sure the missing libraries mentioned above are installed properly.
+2023-10-25 17:25:44.881274: I tensorflow/core/platform/cpu_feature_guard.cc:193] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  AVX2 AVX512F AVX512_VNNI FMA
+To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.
+2023-10-25 17:25:46.342245: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1613] Created device /job:localhost/replica:0/task:0/device:GPU:0 with 30961 MB memory:  -> device: 0, name: Tesla V100-PCIE-32GB, pci bus id: 0000:13:00.0, compute capability: 7.0
+2023-10-25 17:25:46.343147: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1613] Created device /job:localhost/replica:0/task:0/device:GPU:1 with 30961 MB memory:  -> device: 1, name: Tesla V100-PCIE-32GB, pci bus id: 0000:89:00.0, compute capability: 7.0
+Model: "convnext_tiny"
+__________________________________________________________________________________________________
+ Layer (type)                   Output Shape         Param #     Connected to                     
+==================================================================================================
+ input_1 (InputLayer)           [(None, 224, 224, 3  0           []                               
+                                )]                                                                
+                                                                                                  
+ convnext_tiny_prestem_normaliz  (None, 224, 224, 3)  0          ['input_1[0][0]']                
+ ation (Normalization)                                                                            
+                                                                                                  
+ convnext_tiny_stem (Sequential  (None, 56, 56, 96)  4896        ['convnext_tiny_prestem_normaliza
+ )                                                               tion[0][0]']                     
+                                                                                                  
+ convnext_tiny_stage_0_block_0_  (None, 56, 56, 96)  4800        ['convnext_tiny_stem[0][0]']     
+ depthwise_conv (Conv2D)                                                                          
+                                                                                                  
+ convnext_tiny_stage_0_block_0_  (None, 56, 56, 96)  192         ['convnext_tiny_stage_0_block_0_d
+ layernorm (LayerNormalization)                                  epthwise_conv[0][0]']            
+                                                                                                  
+ convnext_tiny_stage_0_block_0_  (None, 56, 56, 384)  37248      ['convnext_tiny_stage_0_block_0_l
+ pointwise_conv_1 (Dense)                                        ayernorm[0][0]']                 
+                                                                                                  
+ convnext_tiny_stage_0_block_0_  (None, 56, 56, 384)  0          ['convnext_tiny_stage_0_block_0_p
+ gelu (Activation)                                               ointwise_conv_1[0][0]']          
+                                                                                                  
+ convnext_tiny_stage_0_block_0_  (None, 56, 56, 96)  36960       ['convnext_tiny_stage_0_block_0_g
+ pointwise_conv_2 (Dense)                                        elu[0][0]']                      
+                                                                                                  
+ convnext_tiny_stage_0_block_0_  (None, 56, 56, 96)  96          ['convnext_tiny_stage_0_block_0_p
+ layer_scale (LayerScale)                                        ointwise_conv_2[0][0]']          
+                                                                                                  
+ convnext_tiny_stage_0_block_0_  (None, 56, 56, 96)  0           ['convnext_tiny_stage_0_block_0_l
+ identity (Activation)                                           ayer_scale[0][0]']               
+                                                                                                  
+ tf.__operators__.add (TFOpLamb  (None, 56, 56, 96)  0           ['convnext_tiny_stem[0][0]',     
+ da)                                                              'convnext_tiny_stage_0_block_0_i
+                                                                 dentity[0][0]']                  
+                                                                                                  
+ convnext_tiny_stage_0_block_1_  (None, 56, 56, 96)  4800        ['tf.__operators__.add[0][0]']   
+ depthwise_conv (Conv2D)                                                                          
+                                                                                                  
+ convnext_tiny_stage_0_block_1_  (None, 56, 56, 96)  192         ['convnext_tiny_stage_0_block_1_d
+ layernorm (LayerNormalization)                                  epthwise_conv[0][0]']            
+                                                                                                  
+ convnext_tiny_stage_0_block_1_  (None, 56, 56, 384)  37248      ['convnext_tiny_stage_0_block_1_l
+ pointwise_conv_1 (Dense)                                        ayernorm[0][0]']                 
+                                                                                                  
+ convnext_tiny_stage_0_block_1_  (None, 56, 56, 384)  0          ['convnext_tiny_stage_0_block_1_p
+ gelu (Activation)                                               ointwise_conv_1[0][0]']          
+                                                                                                  
+ convnext_tiny_stage_0_block_1_  (None, 56, 56, 96)  36960       ['convnext_tiny_stage_0_block_1_g
+ pointwise_conv_2 (Dense)                                        elu[0][0]']                      
+                                                                                                  
+ convnext_tiny_stage_0_block_1_  (None, 56, 56, 96)  96          ['convnext_tiny_stage_0_block_1_p
+ layer_scale (LayerScale)                                        ointwise_conv_2[0][0]']          
+                                                                                                  
+ convnext_tiny_stage_0_block_1_  (None, 56, 56, 96)  0           ['convnext_tiny_stage_0_block_1_l
+ identity (Activation)                                           ayer_scale[0][0]']               
+                                                                                                  
+ tf.__operators__.add_1 (TFOpLa  (None, 56, 56, 96)  0           ['tf.__operators__.add[0][0]',   
+ mbda)                                                            'convnext_tiny_stage_0_block_1_i
+                                                                 dentity[0][0]']                  
+                                                                                                  
+ convnext_tiny_stage_0_block_2_  (None, 56, 56, 96)  4800        ['tf.__operators__.add_1[0][0]'] 
+ depthwise_conv (Conv2D)                                                                          
+                                                                                                  
+ convnext_tiny_stage_0_block_2_  (None, 56, 56, 96)  192         ['convnext_tiny_stage_0_block_2_d
+ layernorm (LayerNormalization)                                  epthwise_conv[0][0]']            
+                                                                                                  
+ convnext_tiny_stage_0_block_2_  (None, 56, 56, 384)  37248      ['convnext_tiny_stage_0_block_2_l
+ pointwise_conv_1 (Dense)                                        ayernorm[0][0]']                 
+                                                                                                  
+ convnext_tiny_stage_0_block_2_  (None, 56, 56, 384)  0          ['convnext_tiny_stage_0_block_2_p
+ gelu (Activation)                                               ointwise_conv_1[0][0]']          
+                                                                                                  
+ convnext_tiny_stage_0_block_2_  (None, 56, 56, 96)  36960       ['convnext_tiny_stage_0_block_2_g
+ pointwise_conv_2 (Dense)                                        elu[0][0]']                      
+                                                                                                  
+ convnext_tiny_stage_0_block_2_  (None, 56, 56, 96)  96          ['convnext_tiny_stage_0_block_2_p
+ layer_scale (LayerScale)                                        ointwise_conv_2[0][0]']          
+                                                                                                  
+ convnext_tiny_stage_0_block_2_  (None, 56, 56, 96)  0           ['convnext_tiny_stage_0_block_2_l
+ identity (Activation)                                           ayer_scale[0][0]']               
+                                                                                                  
+ tf.__operators__.add_2 (TFOpLa  (None, 56, 56, 96)  0           ['tf.__operators__.add_1[0][0]', 
+ mbda)                                                            'convnext_tiny_stage_0_block_2_i
+                                                                 dentity[0][0]']                  
+                                                                                                  
+ convnext_tiny_downsampling_blo  (None, 28, 28, 192)  74112      ['tf.__operators__.add_2[0][0]'] 
+ ck_0 (Sequential)                                                                                
+                                                                                                  
+ convnext_tiny_stage_1_block_0_  (None, 28, 28, 192)  9600       ['convnext_tiny_downsampling_bloc
+ depthwise_conv (Conv2D)                                         k_0[0][0]']                      
+                                                                                                  
+ convnext_tiny_stage_1_block_0_  (None, 28, 28, 192)  384        ['convnext_tiny_stage_1_block_0_d
+ layernorm (LayerNormalization)                                  epthwise_conv[0][0]']            
+                                                                                                  
+ convnext_tiny_stage_1_block_0_  (None, 28, 28, 768)  148224     ['convnext_tiny_stage_1_block_0_l
+ pointwise_conv_1 (Dense)                                        ayernorm[0][0]']                 
+                                                                                                  
+ convnext_tiny_stage_1_block_0_  (None, 28, 28, 768)  0          ['convnext_tiny_stage_1_block_0_p
+ gelu (Activation)                                               ointwise_conv_1[0][0]']          
+                                                                                                  
+ convnext_tiny_stage_1_block_0_  (None, 28, 28, 192)  147648     ['convnext_tiny_stage_1_block_0_g
+ pointwise_conv_2 (Dense)                                        elu[0][0]']                      
+                                                                                                  
+ convnext_tiny_stage_1_block_0_  (None, 28, 28, 192)  192        ['convnext_tiny_stage_1_block_0_p
+ layer_scale (LayerScale)                                        ointwise_conv_2[0][0]']          
+                                                                                                  
+ convnext_tiny_stage_1_block_0_  (None, 28, 28, 192)  0          ['convnext_tiny_stage_1_block_0_l
+ identity (Activation)                                           ayer_scale[0][0]']               
+                                                                                                  
+ tf.__operators__.add_3 (TFOpLa  (None, 28, 28, 192)  0          ['convnext_tiny_downsampling_bloc
+ mbda)                                                           k_0[0][0]',                      
+                                                                  'convnext_tiny_stage_1_block_0_i
+                                                                 dentity[0][0]']                  
+                                                                                                  
+ convnext_tiny_stage_1_block_1_  (None, 28, 28, 192)  9600       ['tf.__operators__.add_3[0][0]'] 
+ depthwise_conv (Conv2D)                                                                          
+                                                                                                  
+ convnext_tiny_stage_1_block_1_  (None, 28, 28, 192)  384        ['convnext_tiny_stage_1_block_1_d
+ layernorm (LayerNormalization)                                  epthwise_conv[0][0]']            
+                                                                                                  
+ convnext_tiny_stage_1_block_1_  (None, 28, 28, 768)  148224     ['convnext_tiny_stage_1_block_1_l
+ pointwise_conv_1 (Dense)                                        ayernorm[0][0]']                 
+                                                                                                  
+ convnext_tiny_stage_1_block_1_  (None, 28, 28, 768)  0          ['convnext_tiny_stage_1_block_1_p
+ gelu (Activation)                                               ointwise_conv_1[0][0]']          
+                                                                                                  
+ convnext_tiny_stage_1_block_1_  (None, 28, 28, 192)  147648     ['convnext_tiny_stage_1_block_1_g
+ pointwise_conv_2 (Dense)                                        elu[0][0]']                      
+                                                                                                  
+ convnext_tiny_stage_1_block_1_  (None, 28, 28, 192)  192        ['convnext_tiny_stage_1_block_1_p
+ layer_scale (LayerScale)                                        ointwise_conv_2[0][0]']          
+                                                                                                  
+ convnext_tiny_stage_1_block_1_  (None, 28, 28, 192)  0          ['convnext_tiny_stage_1_block_1_l
+ identity (Activation)                                           ayer_scale[0][0]']               
+                                                                                                  
+ tf.__operators__.add_4 (TFOpLa  (None, 28, 28, 192)  0          ['tf.__operators__.add_3[0][0]', 
+ mbda)                                                            'convnext_tiny_stage_1_block_1_i
+                                                                 dentity[0][0]']                  
+                                                                                                  
+ convnext_tiny_stage_1_block_2_  (None, 28, 28, 192)  9600       ['tf.__operators__.add_4[0][0]'] 
+ depthwise_conv (Conv2D)                                                                          
+                                                                                                  
+ convnext_tiny_stage_1_block_2_  (None, 28, 28, 192)  384        ['convnext_tiny_stage_1_block_2_d
+ layernorm (LayerNormalization)                                  epthwise_conv[0][0]']            
+                                                                                                  
+ convnext_tiny_stage_1_block_2_  (None, 28, 28, 768)  148224     ['convnext_tiny_stage_1_block_2_l
+ pointwise_conv_1 (Dense)                                        ayernorm[0][0]']                 
+                                                                                                  
+ convnext_tiny_stage_1_block_2_  (None, 28, 28, 768)  0          ['convnext_tiny_stage_1_block_2_p
+ gelu (Activation)                                               ointwise_conv_1[0][0]']          
+                                                                                                  
+ convnext_tiny_stage_1_block_2_  (None, 28, 28, 192)  147648     ['convnext_tiny_stage_1_block_2_g
+ pointwise_conv_2 (Dense)                                        elu[0][0]']                      
+                                                                                                  
+ convnext_tiny_stage_1_block_2_  (None, 28, 28, 192)  192        ['convnext_tiny_stage_1_block_2_p
+ layer_scale (LayerScale)                                        ointwise_conv_2[0][0]']          
+                                                                                                  
+ convnext_tiny_stage_1_block_2_  (None, 28, 28, 192)  0          ['convnext_tiny_stage_1_block_2_l
+ identity (Activation)                                           ayer_scale[0][0]']               
+                                                                                                  
+ tf.__operators__.add_5 (TFOpLa  (None, 28, 28, 192)  0          ['tf.__operators__.add_4[0][0]', 
+ mbda)                                                            'convnext_tiny_stage_1_block_2_i
+                                                                 dentity[0][0]']                  
+                                                                                                  
+ convnext_tiny_downsampling_blo  (None, 14, 14, 384)  295680     ['tf.__operators__.add_5[0][0]'] 
+ ck_1 (Sequential)                                                                                
+                                                                                                  
+ convnext_tiny_stage_2_block_0_  (None, 14, 14, 384)  19200      ['convnext_tiny_downsampling_bloc
+ depthwise_conv (Conv2D)                                         k_1[0][0]']                      
+                                                                                                  
+ convnext_tiny_stage_2_block_0_  (None, 14, 14, 384)  768        ['convnext_tiny_stage_2_block_0_d
+ layernorm (LayerNormalization)                                  epthwise_conv[0][0]']            
+                                                                                                  
+ convnext_tiny_stage_2_block_0_  (None, 14, 14, 1536  591360     ['convnext_tiny_stage_2_block_0_l
+ pointwise_conv_1 (Dense)       )                                ayernorm[0][0]']                 
+                                                                                                  
+ convnext_tiny_stage_2_block_0_  (None, 14, 14, 1536  0          ['convnext_tiny_stage_2_block_0_p
+ gelu (Activation)              )                                ointwise_conv_1[0][0]']          
+                                                                                                  
+ convnext_tiny_stage_2_block_0_  (None, 14, 14, 384)  590208     ['convnext_tiny_stage_2_block_0_g
+ pointwise_conv_2 (Dense)                                        elu[0][0]']                      
+                                                                                                  
+ convnext_tiny_stage_2_block_0_  (None, 14, 14, 384)  384        ['convnext_tiny_stage_2_block_0_p
+ layer_scale (LayerScale)                                        ointwise_conv_2[0][0]']          
+                                                                                                  
+ convnext_tiny_stage_2_block_0_  (None, 14, 14, 384)  0          ['convnext_tiny_stage_2_block_0_l
+ identity (Activation)                                           ayer_scale[0][0]']               
+                                                                                                  
+ tf.__operators__.add_6 (TFOpLa  (None, 14, 14, 384)  0          ['convnext_tiny_downsampling_bloc
+ mbda)                                                           k_1[0][0]',                      
+                                                                  'convnext_tiny_stage_2_block_0_i
+                                                                 dentity[0][0]']                  
+                                                                                                  
+ convnext_tiny_stage_2_block_1_  (None, 14, 14, 384)  19200      ['tf.__operators__.add_6[0][0]'] 
+ depthwise_conv (Conv2D)                                                                          
+                                                                                                  
+ convnext_tiny_stage_2_block_1_  (None, 14, 14, 384)  768        ['convnext_tiny_stage_2_block_1_d
+ layernorm (LayerNormalization)                                  epthwise_conv[0][0]']            
+                                                                                                  
+ convnext_tiny_stage_2_block_1_  (None, 14, 14, 1536  591360     ['convnext_tiny_stage_2_block_1_l
+ pointwise_conv_1 (Dense)       )                                ayernorm[0][0]']                 
+                                                                                                  
+ convnext_tiny_stage_2_block_1_  (None, 14, 14, 1536  0          ['convnext_tiny_stage_2_block_1_p
+ gelu (Activation)              )                                ointwise_conv_1[0][0]']          
+                                                                                                  
+ convnext_tiny_stage_2_block_1_  (None, 14, 14, 384)  590208     ['convnext_tiny_stage_2_block_1_g
+ pointwise_conv_2 (Dense)                                        elu[0][0]']                      
+                                                                                                  
+ convnext_tiny_stage_2_block_1_  (None, 14, 14, 384)  384        ['convnext_tiny_stage_2_block_1_p
+ layer_scale (LayerScale)                                        ointwise_conv_2[0][0]']          
+                                                                                                  
+ convnext_tiny_stage_2_block_1_  (None, 14, 14, 384)  0          ['convnext_tiny_stage_2_block_1_l
+ identity (Activation)                                           ayer_scale[0][0]']               
+                                                                                                  
+ tf.__operators__.add_7 (TFOpLa  (None, 14, 14, 384)  0          ['tf.__operators__.add_6[0][0]', 
+ mbda)                                                            'convnext_tiny_stage_2_block_1_i
+                                                                 dentity[0][0]']                  
+                                                                                                  
+ convnext_tiny_stage_2_block_2_  (None, 14, 14, 384)  19200      ['tf.__operators__.add_7[0][0]'] 
+ depthwise_conv (Conv2D)                                                                          
+                                                                                                  
+ convnext_tiny_stage_2_block_2_  (None, 14, 14, 384)  768        ['convnext_tiny_stage_2_block_2_d
+ layernorm (LayerNormalization)                                  epthwise_conv[0][0]']            
+                                                                                                  
+ convnext_tiny_stage_2_block_2_  (None, 14, 14, 1536  591360     ['convnext_tiny_stage_2_block_2_l
+ pointwise_conv_1 (Dense)       )                                ayernorm[0][0]']                 
+                                                                                                  
+ convnext_tiny_stage_2_block_2_  (None, 14, 14, 1536  0          ['convnext_tiny_stage_2_block_2_p
+ gelu (Activation)              )                                ointwise_conv_1[0][0]']          
+                                                                                                  
+ convnext_tiny_stage_2_block_2_  (None, 14, 14, 384)  590208     ['convnext_tiny_stage_2_block_2_g
+ pointwise_conv_2 (Dense)                                        elu[0][0]']                      
+                                                                                                  
+ convnext_tiny_stage_2_block_2_  (None, 14, 14, 384)  384        ['convnext_tiny_stage_2_block_2_p
+ layer_scale (LayerScale)                                        ointwise_conv_2[0][0]']          
+                                                                                                  
+ convnext_tiny_stage_2_block_2_  (None, 14, 14, 384)  0          ['convnext_tiny_stage_2_block_2_l
+ identity (Activation)                                           ayer_scale[0][0]']               
+                                                                                                  
+ tf.__operators__.add_8 (TFOpLa  (None, 14, 14, 384)  0          ['tf.__operators__.add_7[0][0]', 
+ mbda)                                                            'convnext_tiny_stage_2_block_2_i
+                                                                 dentity[0][0]']                  
+                                                                                                  
+ convnext_tiny_stage_2_block_3_  (None, 14, 14, 384)  19200      ['tf.__operators__.add_8[0][0]'] 
+ depthwise_conv (Conv2D)                                                                          
+                                                                                                  
+ convnext_tiny_stage_2_block_3_  (None, 14, 14, 384)  768        ['convnext_tiny_stage_2_block_3_d
+ layernorm (LayerNormalization)                                  epthwise_conv[0][0]']            
+                                                                                                  
+ convnext_tiny_stage_2_block_3_  (None, 14, 14, 1536  591360     ['convnext_tiny_stage_2_block_3_l
+ pointwise_conv_1 (Dense)       )                                ayernorm[0][0]']                 
+                                                                                                  
+ convnext_tiny_stage_2_block_3_  (None, 14, 14, 1536  0          ['convnext_tiny_stage_2_block_3_p
+ gelu (Activation)              )                                ointwise_conv_1[0][0]']          
+                                                                                                  
+ convnext_tiny_stage_2_block_3_  (None, 14, 14, 384)  590208     ['convnext_tiny_stage_2_block_3_g
+ pointwise_conv_2 (Dense)                                        elu[0][0]']                      
+                                                                                                  
+ convnext_tiny_stage_2_block_3_  (None, 14, 14, 384)  384        ['convnext_tiny_stage_2_block_3_p
+ layer_scale (LayerScale)                                        ointwise_conv_2[0][0]']          
+                                                                                                  
+ convnext_tiny_stage_2_block_3_  (None, 14, 14, 384)  0          ['convnext_tiny_stage_2_block_3_l
+ identity (Activation)                                           ayer_scale[0][0]']               
+                                                                                                  
+ tf.__operators__.add_9 (TFOpLa  (None, 14, 14, 384)  0          ['tf.__operators__.add_8[0][0]', 
+ mbda)                                                            'convnext_tiny_stage_2_block_3_i
+                                                                 dentity[0][0]']                  
+                                                                                                  
+ convnext_tiny_stage_2_block_4_  (None, 14, 14, 384)  19200      ['tf.__operators__.add_9[0][0]'] 
+ depthwise_conv (Conv2D)                                                                          
+                                                                                                  
+ convnext_tiny_stage_2_block_4_  (None, 14, 14, 384)  768        ['convnext_tiny_stage_2_block_4_d
+ layernorm (LayerNormalization)                                  epthwise_conv[0][0]']            
+                                                                                                  
+ convnext_tiny_stage_2_block_4_  (None, 14, 14, 1536  591360     ['convnext_tiny_stage_2_block_4_l
+ pointwise_conv_1 (Dense)       )                                ayernorm[0][0]']                 
+                                                                                                  
+ convnext_tiny_stage_2_block_4_  (None, 14, 14, 1536  0          ['convnext_tiny_stage_2_block_4_p
+ gelu (Activation)              )                                ointwise_conv_1[0][0]']          
+                                                                                                  
+ convnext_tiny_stage_2_block_4_  (None, 14, 14, 384)  590208     ['convnext_tiny_stage_2_block_4_g
+ pointwise_conv_2 (Dense)                                        elu[0][0]']                      
+                                                                                                  
+ convnext_tiny_stage_2_block_4_  (None, 14, 14, 384)  384        ['convnext_tiny_stage_2_block_4_p
+ layer_scale (LayerScale)                                        ointwise_conv_2[0][0]']          
+                                                                                                  
+ convnext_tiny_stage_2_block_4_  (None, 14, 14, 384)  0          ['convnext_tiny_stage_2_block_4_l
+ identity (Activation)                                           ayer_scale[0][0]']               
+                                                                                                  
+ tf.__operators__.add_10 (TFOpL  (None, 14, 14, 384)  0          ['tf.__operators__.add_9[0][0]', 
+ ambda)                                                           'convnext_tiny_stage_2_block_4_i
+                                                                 dentity[0][0]']                  
+                                                                                                  
+ convnext_tiny_stage_2_block_5_  (None, 14, 14, 384)  19200      ['tf.__operators__.add_10[0][0]']
+ depthwise_conv (Conv2D)                                                                          
+                                                                                                  
+ convnext_tiny_stage_2_block_5_  (None, 14, 14, 384)  768        ['convnext_tiny_stage_2_block_5_d
+ layernorm (LayerNormalization)                                  epthwise_conv[0][0]']            
+                                                                                                  
+ convnext_tiny_stage_2_block_5_  (None, 14, 14, 1536  591360     ['convnext_tiny_stage_2_block_5_l
+ pointwise_conv_1 (Dense)       )                                ayernorm[0][0]']                 
+                                                                                                  
+ convnext_tiny_stage_2_block_5_  (None, 14, 14, 1536  0          ['convnext_tiny_stage_2_block_5_p
+ gelu (Activation)              )                                ointwise_conv_1[0][0]']          
+                                                                                                  
+ convnext_tiny_stage_2_block_5_  (None, 14, 14, 384)  590208     ['convnext_tiny_stage_2_block_5_g
+ pointwise_conv_2 (Dense)                                        elu[0][0]']                      
+                                                                                                  
+ convnext_tiny_stage_2_block_5_  (None, 14, 14, 384)  384        ['convnext_tiny_stage_2_block_5_p
+ layer_scale (LayerScale)                                        ointwise_conv_2[0][0]']          
+                                                                                                  
+ convnext_tiny_stage_2_block_5_  (None, 14, 14, 384)  0          ['convnext_tiny_stage_2_block_5_l
+ identity (Activation)                                           ayer_scale[0][0]']               
+                                                                                                  
+ tf.__operators__.add_11 (TFOpL  (None, 14, 14, 384)  0          ['tf.__operators__.add_10[0][0]',
+ ambda)                                                           'convnext_tiny_stage_2_block_5_i
+                                                                 dentity[0][0]']                  
+                                                                                                  
+ convnext_tiny_stage_2_block_6_  (None, 14, 14, 384)  19200      ['tf.__operators__.add_11[0][0]']
+ depthwise_conv (Conv2D)                                                                          
+                                                                                                  
+ convnext_tiny_stage_2_block_6_  (None, 14, 14, 384)  768        ['convnext_tiny_stage_2_block_6_d
+ layernorm (LayerNormalization)                                  epthwise_conv[0][0]']            
+                                                                                                  
+ convnext_tiny_stage_2_block_6_  (None, 14, 14, 1536  591360     ['convnext_tiny_stage_2_block_6_l
+ pointwise_conv_1 (Dense)       )                                ayernorm[0][0]']                 
+                                                                                                  
+ convnext_tiny_stage_2_block_6_  (None, 14, 14, 1536  0          ['convnext_tiny_stage_2_block_6_p
+ gelu (Activation)              )                                ointwise_conv_1[0][0]']          
+                                                                                                  
+ convnext_tiny_stage_2_block_6_  (None, 14, 14, 384)  590208     ['convnext_tiny_stage_2_block_6_g
+ pointwise_conv_2 (Dense)                                        elu[0][0]']                      
+                                                                                                  
+ convnext_tiny_stage_2_block_6_  (None, 14, 14, 384)  384        ['convnext_tiny_stage_2_block_6_p
+ layer_scale (LayerScale)                                        ointwise_conv_2[0][0]']          
+                                                                                                  
+ convnext_tiny_stage_2_block_6_  (None, 14, 14, 384)  0          ['convnext_tiny_stage_2_block_6_l
+ identity (Activation)                                           ayer_scale[0][0]']               
+                                                                                                  
+ tf.__operators__.add_12 (TFOpL  (None, 14, 14, 384)  0          ['tf.__operators__.add_11[0][0]',
+ ambda)                                                           'convnext_tiny_stage_2_block_6_i
+                                                                 dentity[0][0]']                  
+                                                                                                  
+ convnext_tiny_stage_2_block_7_  (None, 14, 14, 384)  19200      ['tf.__operators__.add_12[0][0]']
+ depthwise_conv (Conv2D)                                                                          
+                                                                                                  
+ convnext_tiny_stage_2_block_7_  (None, 14, 14, 384)  768        ['convnext_tiny_stage_2_block_7_d
+ layernorm (LayerNormalization)                                  epthwise_conv[0][0]']            
+                                                                                                  
+ convnext_tiny_stage_2_block_7_  (None, 14, 14, 1536  591360     ['convnext_tiny_stage_2_block_7_l
+ pointwise_conv_1 (Dense)       )                                ayernorm[0][0]']                 
+                                                                                                  
+ convnext_tiny_stage_2_block_7_  (None, 14, 14, 1536  0          ['convnext_tiny_stage_2_block_7_p
+ gelu (Activation)              )                                ointwise_conv_1[0][0]']          
+                                                                                                  
+ convnext_tiny_stage_2_block_7_  (None, 14, 14, 384)  590208     ['convnext_tiny_stage_2_block_7_g
+ pointwise_conv_2 (Dense)                                        elu[0][0]']                      
+                                                                                                  
+ convnext_tiny_stage_2_block_7_  (None, 14, 14, 384)  384        ['convnext_tiny_stage_2_block_7_p
+ layer_scale (LayerScale)                                        ointwise_conv_2[0][0]']          
+                                                                                                  
+ convnext_tiny_stage_2_block_7_  (None, 14, 14, 384)  0          ['convnext_tiny_stage_2_block_7_l
+ identity (Activation)                                           ayer_scale[0][0]']               
+                                                                                                  
+ tf.__operators__.add_13 (TFOpL  (None, 14, 14, 384)  0          ['tf.__operators__.add_12[0][0]',
+ ambda)                                                           'convnext_tiny_stage_2_block_7_i
+                                                                 dentity[0][0]']                  
+                                                                                                  
+ convnext_tiny_stage_2_block_8_  (None, 14, 14, 384)  19200      ['tf.__operators__.add_13[0][0]']
+ depthwise_conv (Conv2D)                                                                          
+                                                                                                  
+ convnext_tiny_stage_2_block_8_  (None, 14, 14, 384)  768        ['convnext_tiny_stage_2_block_8_d
+ layernorm (LayerNormalization)                                  epthwise_conv[0][0]']            
+                                                                                                  
+ convnext_tiny_stage_2_block_8_  (None, 14, 14, 1536  591360     ['convnext_tiny_stage_2_block_8_l
+ pointwise_conv_1 (Dense)       )                                ayernorm[0][0]']                 
+                                                                                                  
+ convnext_tiny_stage_2_block_8_  (None, 14, 14, 1536  0          ['convnext_tiny_stage_2_block_8_p
+ gelu (Activation)              )                                ointwise_conv_1[0][0]']          
+                                                                                                  
+ convnext_tiny_stage_2_block_8_  (None, 14, 14, 384)  590208     ['convnext_tiny_stage_2_block_8_g
+ pointwise_conv_2 (Dense)                                        elu[0][0]']                      
+                                                                                                  
+ convnext_tiny_stage_2_block_8_  (None, 14, 14, 384)  384        ['convnext_tiny_stage_2_block_8_p
+ layer_scale (LayerScale)                                        ointwise_conv_2[0][0]']          
+                                                                                                  
+ convnext_tiny_stage_2_block_8_  (None, 14, 14, 384)  0          ['convnext_tiny_stage_2_block_8_l
+ identity (Activation)                                           ayer_scale[0][0]']               
+                                                                                                  
+ tf.__operators__.add_14 (TFOpL  (None, 14, 14, 384)  0          ['tf.__operators__.add_13[0][0]',
+ ambda)                                                           'convnext_tiny_stage_2_block_8_i
+                                                                 dentity[0][0]']                  
+                                                                                                  
+ convnext_tiny_downsampling_blo  (None, 7, 7, 768)   1181184     ['tf.__operators__.add_14[0][0]']
+ ck_2 (Sequential)                                                                                
+                                                                                                  
+ convnext_tiny_stage_3_block_0_  (None, 7, 7, 768)   38400       ['convnext_tiny_downsampling_bloc
+ depthwise_conv (Conv2D)                                         k_2[0][0]']                      
+                                                                                                  
+ convnext_tiny_stage_3_block_0_  (None, 7, 7, 768)   1536        ['convnext_tiny_stage_3_block_0_d
+ layernorm (LayerNormalization)                                  epthwise_conv[0][0]']            
+                                                                                                  
+ convnext_tiny_stage_3_block_0_  (None, 7, 7, 3072)  2362368     ['convnext_tiny_stage_3_block_0_l
+ pointwise_conv_1 (Dense)                                        ayernorm[0][0]']                 
+                                                                                                  
+ convnext_tiny_stage_3_block_0_  (None, 7, 7, 3072)  0           ['convnext_tiny_stage_3_block_0_p
+ gelu (Activation)                                               ointwise_conv_1[0][0]']          
+                                                                                                  
+ convnext_tiny_stage_3_block_0_  (None, 7, 7, 768)   2360064     ['convnext_tiny_stage_3_block_0_g
+ pointwise_conv_2 (Dense)                                        elu[0][0]']                      
+                                                                                                  
+ convnext_tiny_stage_3_block_0_  (None, 7, 7, 768)   768         ['convnext_tiny_stage_3_block_0_p
+ layer_scale (LayerScale)                                        ointwise_conv_2[0][0]']          
+                                                                                                  
+ convnext_tiny_stage_3_block_0_  (None, 7, 7, 768)   0           ['convnext_tiny_stage_3_block_0_l
+ identity (Activation)                                           ayer_scale[0][0]']               
+                                                                                                  
+ tf.__operators__.add_15 (TFOpL  (None, 7, 7, 768)   0           ['convnext_tiny_downsampling_bloc
+ ambda)                                                          k_2[0][0]',                      
+                                                                  'convnext_tiny_stage_3_block_0_i
+                                                                 dentity[0][0]']                  
+                                                                                                  
+ convnext_tiny_stage_3_block_1_  (None, 7, 7, 768)   38400       ['tf.__operators__.add_15[0][0]']
+ depthwise_conv (Conv2D)                                                                          
+                                                                                                  
+ convnext_tiny_stage_3_block_1_  (None, 7, 7, 768)   1536        ['convnext_tiny_stage_3_block_1_d
+ layernorm (LayerNormalization)                                  epthwise_conv[0][0]']            
+                                                                                                  
+ convnext_tiny_stage_3_block_1_  (None, 7, 7, 3072)  2362368     ['convnext_tiny_stage_3_block_1_l
+ pointwise_conv_1 (Dense)                                        ayernorm[0][0]']                 
+                                                                                                  
+ convnext_tiny_stage_3_block_1_  (None, 7, 7, 3072)  0           ['convnext_tiny_stage_3_block_1_p
+ gelu (Activation)                                               ointwise_conv_1[0][0]']          
+                                                                                                  
+ convnext_tiny_stage_3_block_1_  (None, 7, 7, 768)   2360064     ['convnext_tiny_stage_3_block_1_g
+ pointwise_conv_2 (Dense)                                        elu[0][0]']                      
+                                                                                                  
+ convnext_tiny_stage_3_block_1_  (None, 7, 7, 768)   768         ['convnext_tiny_stage_3_block_1_p
+ layer_scale (LayerScale)                                        ointwise_conv_2[0][0]']          
+                                                                                                  
+ convnext_tiny_stage_3_block_1_  (None, 7, 7, 768)   0           ['convnext_tiny_stage_3_block_1_l
+ identity (Activation)                                           ayer_scale[0][0]']               
+                                                                                                  
+ tf.__operators__.add_16 (TFOpL  (None, 7, 7, 768)   0           ['tf.__operators__.add_15[0][0]',
+ ambda)                                                           'convnext_tiny_stage_3_block_1_i
+                                                                 dentity[0][0]']                  
+                                                                                                  
+ convnext_tiny_stage_3_block_2_  (None, 7, 7, 768)   38400       ['tf.__operators__.add_16[0][0]']
+ depthwise_conv (Conv2D)                                                                          
+                                                                                                  
+ convnext_tiny_stage_3_block_2_  (None, 7, 7, 768)   1536        ['convnext_tiny_stage_3_block_2_d
+ layernorm (LayerNormalization)                                  epthwise_conv[0][0]']            
+                                                                                                  
+ convnext_tiny_stage_3_block_2_  (None, 7, 7, 3072)  2362368     ['convnext_tiny_stage_3_block_2_l
+ pointwise_conv_1 (Dense)                                        ayernorm[0][0]']                 
+                                                                                                  
+ convnext_tiny_stage_3_block_2_  (None, 7, 7, 3072)  0           ['convnext_tiny_stage_3_block_2_p
+ gelu (Activation)                                               ointwise_conv_1[0][0]']          
+                                                                                                  
+ convnext_tiny_stage_3_block_2_  (None, 7, 7, 768)   2360064     ['convnext_tiny_stage_3_block_2_g
+ pointwise_conv_2 (Dense)                                        elu[0][0]']                      
+                                                                                                  
+ convnext_tiny_stage_3_block_2_  (None, 7, 7, 768)   768         ['convnext_tiny_stage_3_block_2_p
+ layer_scale (LayerScale)                                        ointwise_conv_2[0][0]']          
+                                                                                                  
+ convnext_tiny_stage_3_block_2_  (None, 7, 7, 768)   0           ['convnext_tiny_stage_3_block_2_l
+ identity (Activation)                                           ayer_scale[0][0]']               
+                                                                                                  
+ tf.__operators__.add_17 (TFOpL  (None, 7, 7, 768)   0           ['tf.__operators__.add_16[0][0]',
+ ambda)                                                           'convnext_tiny_stage_3_block_2_i
+                                                                 dentity[0][0]']                  
+                                                                                                  
+ convnext_tiny_head_gap (Global  (None, 768)         0           ['tf.__operators__.add_17[0][0]']
+ AveragePooling2D)                                                                                
+                                                                                                  
+ convnext_tiny_head_layernorm (  (None, 768)         1536        ['convnext_tiny_head_gap[0][0]'] 
+ LayerNormalization)                                                                              
+                                                                                                  
+ convnext_tiny_head_dense (Dens  (None, 2)           1538        ['convnext_tiny_head_layernorm[0]
+ e)                                                              [0]']                            
+                                                                                                  
+==================================================================================================
+Total params: 27,821,666
+Trainable params: 27,821,666
+Non-trainable params: 0
+__________________________________________________________________________________________________
+Epoch 1/100
+2023-10-25 17:26:07.964250: I tensorflow/compiler/xla/stream_executor/cuda/cuda_dnn.cc:428] Loaded cuDNN version 8500
+2023-10-25 17:26:08.580286: I tensorflow/compiler/xla/service/service.cc:173] XLA service 0x7ff1f6918db0 initialized for platform CUDA (this does not guarantee that XLA will be used). Devices:
+2023-10-25 17:26:08.580316: I tensorflow/compiler/xla/service/service.cc:181]   StreamExecutor device (0): Tesla V100-PCIE-32GB, Compute Capability 7.0
+2023-10-25 17:26:08.580321: I tensorflow/compiler/xla/service/service.cc:181]   StreamExecutor device (1): Tesla V100-PCIE-32GB, Compute Capability 7.0
+2023-10-25 17:26:08.805834: W tensorflow/compiler/xla/service/gpu/nvptx_helper.cc:56] Can't find libdevice directory ${CUDA_DIR}/nvvm/libdevice. This may result in compilation or runtime failures, if the program we try to run uses routines from libdevice.
+Searched for CUDA in the following directories:
+  ./cuda_sdk_lib
+  /usr/local/cuda-11.2
+  /usr/local/cuda
+  .
+You can choose the search directory by setting xla_gpu_cuda_data_dir in HloModule's DebugOptions.  For most apps, setting the environment variable XLA_FLAGS=--xla_gpu_cuda_data_dir=/path/to/cuda will work.
+2023-10-25 17:26:08.907157: I tensorflow/compiler/jit/xla_compilation_cache.cc:477] Compiled cluster using XLA!  This line is logged at most once for the lifetime of the process.
+2023-10-25 17:26:10.132386: I tensorflow/compiler/mlir/tensorflow/utils/dump_mlir_util.cc:268] disabling MLIR crash reproducer, set env var `MLIR_CRASH_REPRODUCER_DIRECTORY` to enable.
+2023-10-25 17:26:10.151538: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:10.151767: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:10.169966: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:10.170188: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:10.188128: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:10.188340: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:10.206548: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:10.206759: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:10.225374: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:10.225586: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:10.243597: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:10.243813: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:10.261889: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:10.262104: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:10.281512: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:10.281729: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:10.299901: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:10.300117: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:10.318253: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:10.318469: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:10.336701: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:10.336918: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:10.744885: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:10.745151: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:10.746859: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:10.747039: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:10.747118: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:10.747288: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:10.765511: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:10.765732: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:10.783808: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:10.784026: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:10.802457: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:10.802674: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:10.820784: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:10.821003: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:10.839075: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:10.839326: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:10.857514: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:10.857732: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:10.971555: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:10.971629: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:10.971805: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:10.971868: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:10.971897: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:10.972159: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:10.990026: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:10.990246: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:11.008437: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:11.008656: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:11.027141: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:11.027360: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:11.045535: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:11.045755: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:11.063969: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:11.064188: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:11.082412: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:11.082630: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:11.203598: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:11.203641: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:11.203901: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:11.203917: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:11.424157: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:11.424412: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:11.442402: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:11.442620: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:11.460744: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:11.460957: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:11.479168: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:11.479382: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:11.498334: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:11.498549: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:11.516594: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:11.516814: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:11.535001: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:11.535218: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:11.555430: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:11.555654: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:11.573826: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:11.574044: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:11.592250: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:11.592466: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:11.610778: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:11.610997: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:11.904486: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:11.904568: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:11.904762: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:11.904824: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:11.907739: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:11.907973: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:11.923168: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:11.923388: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:11.941755: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:11.941973: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:11.960694: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:11.960912: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:11.979222: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:11.979442: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:11.997802: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:11.998020: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:12.016400: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:12.016619: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:12.109689: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:12.109781: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:12.109938: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:12.109939: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:12.110024: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:12.110202: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:12.128282: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:12.128507: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:12.146658: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:12.146877: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:12.165440: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:12.165661: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:12.183854: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:12.184074: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:12.202270: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:12.202487: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:12.220749: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:12.220974: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:12.314301: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:12.314344: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:12.314498: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:12.314556: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:12.314586: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:12.314741: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:12.332806: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:12.333027: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:12.351253: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:12.351514: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:12.370028: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:12.370246: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:12.388449: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:12.388669: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:12.406863: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:12.407081: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:12.425307: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:12.425527: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:12.520922: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:12.520976: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:12.521034: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:12.521176: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:12.521224: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:12.521277: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:12.539512: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:12.539735: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:12.558032: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:12.558253: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:12.576848: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:12.577067: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:12.595300: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:12.595527: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:12.613763: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:12.613982: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:12.632275: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:12.632493: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:12.724825: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:12.725057: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:12.725078: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:12.725303: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:12.730996: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:12.731228: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:12.749453: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:12.749674: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:12.767923: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:12.768143: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:12.786819: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:12.787039: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:12.805174: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:12.805392: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:12.823613: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:12.823832: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:12.842217: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:12.842437: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:12.935242: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:12.935376: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:12.935516: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:12.935642: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:12.935668: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:12.935909: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:12.954129: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:12.954356: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:12.972767: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:12.972991: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:12.991816: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:12.992038: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:13.010475: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:13.010695: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:13.029190: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:13.029418: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:13.047930: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:13.048152: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:13.141284: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:13.141458: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:13.141534: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:13.141556: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:13.141699: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:13.141803: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:13.159994: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:13.160220: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:13.178468: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:13.178689: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:13.197278: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:13.197498: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:13.215697: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:13.215917: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:13.234125: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:13.234345: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:13.252609: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:13.252828: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:13.345209: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:13.345399: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:13.345432: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:13.345463: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:13.345658: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:13.345676: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:13.364048: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:13.364274: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:13.382550: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:13.382772: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:13.401409: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:13.401628: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:13.419880: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:13.420101: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:13.438348: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:13.438566: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:13.456878: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:13.457096: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:13.550575: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:13.550636: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:13.550839: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:13.550884: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:13.562216: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:13.562453: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:13.580753: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:13.580979: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:13.599299: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:13.599536: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:13.617912: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:13.618134: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:13.637573: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:13.637795: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:13.659135: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:13.659384: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:13.677663: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:13.677887: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:13.701016: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:13.701240: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:13.719460: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:13.719683: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:13.738035: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:13.738258: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:13.756653: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:13.756877: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:14.072781: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:14.073062: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:14.076227: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:14.076476: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:14.078841: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:14.079095: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:14.097426: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:14.097652: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:14.115910: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:14.116130: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:14.134769: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:14.134989: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:14.153230: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:14.153451: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:14.171714: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:14.171934: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:14.190170: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:14.190390: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:14.282265: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:14.282452: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:14.282517: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:14.282699: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:14.287955: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:14.288200: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:14.306530: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:14.306759: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:14.325145: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:14.325371: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:14.344102: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:14.344326: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:14.362624: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:14.362847: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:14.381219: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:14.381443: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:14.399846: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:14.400069: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:14.491796: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:14.491974: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:14.492049: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:14.492223: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:14.505409: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:14.505650: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:14.523933: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:14.524155: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:14.542423: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:14.542642: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:14.560956: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:14.561175: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:14.581414: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:14.581635: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:14.599809: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:14.600030: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:14.618264: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:14.618487: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:14.643942: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:14.644162: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:14.662484: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:14.662704: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:14.680985: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:14.681204: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:14.699500: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:14.699722: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:15.078933: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:15.078975: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:15.079013: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:15.079243: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:15.079260: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:15.079281: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:15.099327: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:15.099563: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:15.117792: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:15.118012: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:15.136669: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:15.136889: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:15.155090: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:15.155316: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:15.173607: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:15.173827: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:15.192151: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:15.192371: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:15.290598: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:15.290848: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:15.290912: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:15.291157: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:15.300754: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:15.300994: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:15.319248: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:15.319478: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:15.337835: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:15.338059: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:15.356851: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:15.357072: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:15.375282: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:15.375526: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:15.393828: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:15.394050: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:15.412414: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:15.412636: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:15.511142: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:15.511175: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:15.511202: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:15.511399: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:15.511425: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:15.511462: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:15.530049: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:15.530279: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:15.553559: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:15.553787: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+2023-10-25 17:26:15.572046: W tensorflow/compiler/xla/service/gpu/llvm_gpu_backend/gpu_backend_lib.cc:326] libdevice is required by this HLO module but was not found at ./libdevice.10.bc
+2023-10-25 17:26:15.572271: W tensorflow/core/framework/op_kernel.cc:1830] OP_REQUIRES failed at xla_ops.cc:446 : INTERNAL: libdevice not found at ./libdevice.10.bc
+Traceback (most recent call last):
+  File "convnext.py", line 77, in <module>
+    model.fit(
+  File "/home/mamcinerney/.local/lib/python3.8/site-packages/keras/utils/traceback_utils.py", line 70, in error_handler
+    raise e.with_traceback(filtered_tb) from None
+  File "/home/mamcinerney/.local/lib/python3.8/site-packages/tensorflow/python/eager/execute.py", line 52, in quick_execute
+    tensors = pywrap_tfe.TFE_Py_Execute(ctx._handle, device_name, op_name,
+tensorflow.python.framework.errors_impl.InternalError: Graph execution error:
+
+Detected at node 'StatefulPartitionedCall_181' defined at (most recent call last):
+    File "convnext.py", line 77, in <module>
+      model.fit(
+    File "/home/mamcinerney/.local/lib/python3.8/site-packages/keras/utils/traceback_utils.py", line 65, in error_handler
+      return fn(*args, **kwargs)
+    File "/home/mamcinerney/.local/lib/python3.8/site-packages/keras/engine/training.py", line 1650, in fit
+      tmp_logs = self.train_function(iterator)
+    File "/home/mamcinerney/.local/lib/python3.8/site-packages/keras/engine/training.py", line 1249, in train_function
+      return step_function(self, iterator)
+    File "/home/mamcinerney/.local/lib/python3.8/site-packages/keras/engine/training.py", line 1233, in step_function
+      outputs = model.distribute_strategy.run(run_step, args=(data,))
+    File "/home/mamcinerney/.local/lib/python3.8/site-packages/keras/engine/training.py", line 1222, in run_step
+      outputs = model.train_step(data)
+    File "/home/mamcinerney/.local/lib/python3.8/site-packages/keras/engine/training.py", line 1027, in train_step
+      self.optimizer.minimize(loss, self.trainable_variables, tape=tape)
+    File "/home/mamcinerney/.local/lib/python3.8/site-packages/keras/optimizers/optimizer_experimental/optimizer.py", line 527, in minimize
+      self.apply_gradients(grads_and_vars)
+    File "/home/mamcinerney/.local/lib/python3.8/site-packages/keras/optimizers/optimizer_experimental/optimizer.py", line 1140, in apply_gradients
+      return super().apply_gradients(grads_and_vars, name=name)
+    File "/home/mamcinerney/.local/lib/python3.8/site-packages/keras/optimizers/optimizer_experimental/optimizer.py", line 634, in apply_gradients
+      iteration = self._internal_apply_gradients(grads_and_vars)
+    File "/home/mamcinerney/.local/lib/python3.8/site-packages/keras/optimizers/optimizer_experimental/optimizer.py", line 1166, in _internal_apply_gradients
+      return tf.__internal__.distribute.interim.maybe_merge_call(
+    File "/home/mamcinerney/.local/lib/python3.8/site-packages/keras/optimizers/optimizer_experimental/optimizer.py", line 1216, in _distributed_apply_gradients_fn
+      distribution.extended.update(
+    File "/home/mamcinerney/.local/lib/python3.8/site-packages/keras/optimizers/optimizer_experimental/optimizer.py", line 1211, in apply_grad_to_update_var
+      return self._update_step_xla(grad, var, id(self._var_key(var)))
+Node: 'StatefulPartitionedCall_181'
+libdevice not found at ./libdevice.10.bc
+	 [[{{node StatefulPartitionedCall_181}}]] [Op:__inference_train_function_27707]
+I am done

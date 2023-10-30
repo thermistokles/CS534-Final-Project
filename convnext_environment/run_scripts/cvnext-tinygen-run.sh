@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH -N 1
 #SBATCH -n 25
-#SBATCH --mem=12g
+#SBATCH --mem=24g
 #SBATCH -J "[cuda test] SIIM-ACR Pneumothorax ConvNextTiny"
 #SBATCH -p long
 #SBATCH -t 2-23:00:00
@@ -16,6 +16,6 @@ module load cudnn8.1-cuda11.2/8.1.1.33
 
 export set XLA_FLAGS=--xla_gpu_cuda_data_dir=/cm/shared/apps/cuda11.2/toolkit/11.2.2
 
-python convnext.py
+python cvnext-tinygen.py
 
 echo "I am done"

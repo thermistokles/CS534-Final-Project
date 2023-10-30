@@ -6,6 +6,8 @@ import matplotlib.pyplot as plt
 import os
 import cv2
 
+from keras.preprocessing.image import ImageDataGenerator
+
 mfiles=[]
 mpaths = []
 for dirname, _, filenames in os.walk('png_masks'):
@@ -72,11 +74,12 @@ lr_reduction = keras.callbacks.ReduceLROnPlateau(
     patience=3, 
     verbose=1 
 )
+aug = ImageDataGenerator(rotation_range=20, zoom_range=0.15, fill_mode="nearest")
 
 model.summary()
 model.fit(
-    trainingData,
-    label_training,
+    aug.flow(trainingData,
+    label_training,batch_size=128),
     verbose=1,
     epochs=10000,
     validation_data=[
@@ -88,4 +91,4 @@ model.fit(
         lr_reduction
     ]
 )
-model.save("convnext_tiny-compare.keras")
+model.save("convnext_tiny-augmented.keras")
