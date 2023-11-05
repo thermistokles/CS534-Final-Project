@@ -51,7 +51,7 @@ output_path = str(str(os.getcwd()) + args.output)
 
 # Machine-specific variables
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-seed = 40
+seed = 42
 image_resize = 224
 
 # Timm variables
@@ -107,7 +107,7 @@ def env_setup():
         torch.backends.cudnn.deterministic = True
         torch.cuda.manual_seed(seed)
 
-    np.random.seed(42)
+    np.random.seed(seed)
     utils.random_seed(seed, 0)
     torch.manual_seed(seed)
 
@@ -167,7 +167,20 @@ def data_preprocessing():
         total_train_data = pd.merge(df, total_train_data.loc[total_train_data["has_pneumo"] == 0], how="outer")
         pass
 
-    total_train_data = total_train_data.sample(random_state=seed, frac=0.01)  # TODO: frac=1
+    num_0 = len(test_image_data.loc[test_image_data["has_pneumo"] == 0])
+    num_1 = len(test_image_data.loc[test_image_data["has_pneumo"] == 1])
+
+    if num_0 > num_1:
+        df = test_image_data.loc[test_image_data["has_pneumo"] == 0].iloc[(num_0 - num_1):]
+        test_image_data = pd.merge(df, test_image_data.loc[test_image_data["has_pneumo"] == 1], how="outer")
+        pass
+    else:
+        df = test_image_data.loc[test_image_data["has_pneumo"] == 1].iloc[(num_1 - num_0):]
+        test_image_data = pd.merge(df, test_image_data.loc[test_image_data["has_pneumo"] == 0], how="outer")
+        pass
+
+    total_train_data = total_train_data.sample(random_state=seed, frac=1)
+    test_image_data = test_image_data.sample(random_state=seed, frac=1)
     train_images, val_images, train_labels, val_labels = skl.model_selection.train_test_split(
         pd.DataFrame({"path": total_train_data["path"].tolist(),
                       "mpath": total_train_data["mpath"].tolist()}),
@@ -226,7 +239,7 @@ def train_model(model=None, specifier=""):
             model = model.to(device)
 
             optimizer = torch.optim.Adam(model.parameters())
-            loss_fcn = nn.BCEWithLogitsLoss()
+            loss_fcn = nn.CrossEntropyLoss()
             dataloaders = dict({"train": trainDataLoader, "validation": validationDataLoader})
 
             for epoch in range(num_epochs):
@@ -244,7 +257,7 @@ def train_model(model=None, specifier=""):
                     running_loss = 0
                     running_corrects = 0
 
-                    for inputs, labels in tqdm(dataloaders[phase]):
+                    for inputs, labels in tqdm(dataloaders[phase], position=0, leave=True):
                         inputs = inputs.to(device)
                         labels = labels.to(device)
 
@@ -306,7 +319,7 @@ def test_model(model=None, specifier=""):
             ground_truths = []
 
             with torch.no_grad():
-                for img, label in tqdm(testDataLoader):
+                for img, label in tqdm(testDataLoader, position=0, leave=True):
                     output = torch.nn.functional.softmax(model(img.to(device)), dim=1)
                     _, index = torch.topk(output, k=1, dim=1)
                     predictions.append(index.flatten())

@@ -19,4 +19,4 @@ export set XLA_FLAGS=--xla_gpu_cuda_data_dir=/cm/shared/apps/cuda11.2/toolkit/11
 source /home/iaklevanski/cs534-team-5-repo/fast-faster-vit-environment/myenv/bin/activate
 
 python3 pytorch_executor.py -e 25 -p data/siim-acr-pneumothorax
-python3 pytorch_executor.py -m faster_vit_3_224 -e 25 -p data/siim-acr-pneumothorax
+python3 pytorch_executor.py -m faster_vit_0_224 -e 25 -p data/siim-acr-pneumothorax
