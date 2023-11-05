@@ -36,20 +36,22 @@ from fastervit.models.faster_vit import *
 # Parse Arguments
 argParser = argparse.ArgumentParser()
 
-argParser.add_argument("-m", "--model", type=str, default="fastvit_ma36", help="Timm Model Specifier")
+argParser.add_argument("-m", "--model", type=str, default="fastvit_t8", help="Timm Model Specifier")
 argParser.add_argument("-p", "--path", type=str, default="..\\data\\siim-acr-pneumothorax", help="Images path")
 argParser.add_argument("-e", "--epochs", type=int, default=100, help="Number of epochs")
+argParser.add_argument("-b", "--batch_size", type=int, default=64, help="Batch Size")
 argParser.add_argument("-o", "--output", type=str, default="\\output", help="Output directory")
 args = argParser.parse_args()
 
 full_image_path = args.path
 model_name = args.model
 num_epochs = args.epochs
+batch_size = args.batch_size
 output_path = str(str(os.getcwd()) + args.output)
 
 # Machine-specific variables
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-seed = 42
+seed = 40
 image_resize = 224
 
 # Timm variables
@@ -66,13 +68,14 @@ testDataLoader = DataLoader
 best_model_weights = dict()
 
 
-class STImageDataset(Dataset):
+class STMaskedImageDataset(Dataset):
     """
     Sequential Tensor Image Dataset
     """
 
-    def __init__(self, image_list, label_list, augmentation=None):
+    def __init__(self, image_list, mask_list, label_list, augmentation=None):
         self.images = image_list
+        self.masks = mask_list
         self.labels = label_list
         self.aug = augmentation
 
@@ -81,13 +84,16 @@ class STImageDataset(Dataset):
 
     def __getitem__(self, item):
         path = self.images[item]
+        mpath = self.masks[item]
         # Convert to raw byte array
         image = np.asarray(Image.open(path).convert("RGB"))
+        mask = np.asarray(Image.open(mpath).convert("RGB"))
         # Format/adjust image
         if self.aug:
-            image = self.aug(image=image)["image"]
+            image = self.aug(image=image, mask=mask)
+            # plt.imshow(image["image"].permute(1, 2, 0))
         label = self.labels[item]
-        return image, label
+        return image["image"], label
 
 
 def env_setup():
@@ -161,9 +167,10 @@ def data_preprocessing():
         total_train_data = pd.merge(df, total_train_data.loc[total_train_data["has_pneumo"] == 0], how="outer")
         pass
 
-    total_train_data = total_train_data.sample(random_state=seed, frac=1)
+    total_train_data = total_train_data.sample(random_state=seed, frac=0.01)  # TODO: frac=1
     train_images, val_images, train_labels, val_labels = skl.model_selection.train_test_split(
-        total_train_data["path"].tolist(),
+        pd.DataFrame({"path": total_train_data["path"].tolist(),
+                      "mpath": total_train_data["mpath"].tolist()}),
         total_train_data["has_pneumo"].tolist(),
         stratify=total_train_data["has_pneumo"].tolist(),
         train_size=0.9)
@@ -182,14 +189,20 @@ def data_preprocessing():
         albumentations.pytorch.transforms.ToTensorV2()
     ])
 
-    trainDataSet = STImageDataset(train_images, train_labels, aug)
-    trainDataLoader = DataLoader(trainDataSet, shuffle=True)
+    trainDataSet = STMaskedImageDataset(train_images["path"].tolist(),
+                                        train_images["mpath"].tolist(),
+                                        train_labels, aug)
+    trainDataLoader = DataLoader(trainDataSet, shuffle=True, batch_size=batch_size)
 
-    validationDataSet = STImageDataset(val_images, val_labels, aug)
-    validationDataLoader = DataLoader(validationDataSet, shuffle=False)
+    validationDataSet = STMaskedImageDataset(val_images["path"].tolist(),
+                                             val_images["mpath"].tolist(),
+                                             val_labels, aug)
+    validationDataLoader = DataLoader(validationDataSet, shuffle=False, batch_size=batch_size)
 
-    testDataSet = STImageDataset(test_image_data["path"].tolist(), test_image_data["has_pneumo"].tolist(), aug)
-    testDataLoader = DataLoader(testDataSet, shuffle=False)
+    testDataSet = STMaskedImageDataset(test_image_data["path"].tolist(),
+                                       test_image_data["mpath"].tolist(),
+                                       test_image_data["has_pneumo"].tolist(), aug)
+    testDataLoader = DataLoader(testDataSet, shuffle=False, batch_size=batch_size)
 
 
 # TODO: Needs hyperparameter tuning, most of the implementation comes from the first reference
@@ -213,7 +226,7 @@ def train_model(model=None, specifier=""):
             model = model.to(device)
 
             optimizer = torch.optim.Adam(model.parameters())
-            loss_fcn = nn.CrossEntropyLoss()
+            loss_fcn = nn.BCEWithLogitsLoss()
             dataloaders = dict({"train": trainDataLoader, "validation": validationDataLoader})
 
             for epoch in range(num_epochs):
