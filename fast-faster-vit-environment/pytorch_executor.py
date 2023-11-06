@@ -126,28 +126,6 @@ def data_preprocessing():
     masks_exp = full_image_path + "/png_masks"
     raw_images_exp = full_image_path + "/png_images"
 
-    # Masks
-    mfiles = []
-    mpaths = []
-
-    # Raw images
-    files = []
-    paths = []
-
-    # Allocate mask arrays
-    for dirname, _, filenames in os.walk(masks_exp):
-        for filename in filenames:
-            path = os.path.join(dirname, filename)
-            mpaths.append(path)
-            mfiles.append(filename)
-
-    # Allocate raw image arrays
-    for dirname, _, filenames in os.walk(raw_images_exp):
-        for filename in filenames:
-            path = os.path.join(dirname, filename)
-            paths.append(path)
-            files.append(filename)
-
     # Allocate format dataframes
 
     total_train_data = pd.read_csv(full_image_path + "/stage_1_train_images.csv")
