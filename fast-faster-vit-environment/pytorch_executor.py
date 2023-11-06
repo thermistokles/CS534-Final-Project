@@ -41,6 +41,7 @@ argParser.add_argument("-p", "--path", type=str, default="..\\data\\siim-acr-pne
 argParser.add_argument("-e", "--epochs", type=int, default=100, help="Number of epochs")
 argParser.add_argument("-b", "--batch_size", type=int, default=64, help="Batch Size")
 argParser.add_argument("-o", "--output", type=str, default="\\output", help="Output directory")
+argParser.add_argument("-pm", "--pretrained_model", type=str, default="", help="Path to pretrained model")
 args = argParser.parse_args()
 
 full_image_path = args.path
@@ -48,6 +49,7 @@ model_name = args.model
 num_epochs = args.epochs
 batch_size = args.batch_size
 output_path = str(str(os.getcwd()) + args.output)
+pretrained_model = args.pretrained_model
 
 # Machine-specific variables
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -317,11 +319,21 @@ def test_model(model=None, specifier=""):
 
             print("\n%s accuracy: %.4f\n" % (specifier, skl.metrics.accuracy_score(ground_truths, predictions)))
             print("%s f1-score: %.4f\n" % (specifier, skl.metrics.f1_score(ground_truths, predictions)))
+            print("%s MCC: %.4f\n" % (specifier, skl.metrics.matthews_corrcoef(ground_truths, predictions)))
 
             # Confusion matrix
             cm = skl.metrics.confusion_matrix(ground_truths, predictions, normalize="all")
             print("Confusion Matrix:")
             print(str(cm))
+
+            # ROC Curve
+            fpr, tpr, _ = skl.metrics.roc_curve(ground_truths, predictions)
+            print("\n%s ROC AUC Score: %.4f\n" % (specifier, skl.metrics.roc_auc_score(ground_truths, predictions)))
+            plt.plot(fpr, tpr)
+            plt.ylabel("True Positive Rate")
+            plt.xlabel("False Positive Rate")
+            plt.savefig(f"{output_path}/{specifier}_roc.png")
+
         except:
             print("[Error]: Exception occurred during testing:\n")
             traceback.print_exc()
@@ -342,13 +354,19 @@ def main():
     batch size, learning rate, number of layers (just choose different variations of the neural network available) 
     """
     model = create_model(model_name)
-    train_model(model, model_name)
 
-    # Save the model
-    if not os.path.exists(output_path):
-        os.makedirs(output_path)
+    if pretrained_model == "":
+        train_model(model, model_name)
 
-    torch.save(model.state_dict(), f"{output_path}/{model_name}.pth")
+        # Save the model
+        if not os.path.exists(output_path):
+            os.makedirs(output_path)
+
+        torch.save(model.state_dict(), f"{output_path}/{model_name}.pth")
+    else:
+        weights = torch.load(str(str(os.getcwd()) + pretrained_model))
+        model.load_state_dict(weights)
+        model = model.to(device)
 
     # Test the model
     test_model(model, model_name)
