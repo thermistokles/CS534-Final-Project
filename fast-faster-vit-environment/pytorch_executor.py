@@ -24,7 +24,6 @@ import albumentations
 import albumentations.pytorch
 
 from PIL import Image
-from PIL.Image import Palette
 from timm import utils
 from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
@@ -52,7 +51,7 @@ output_path = str(str(os.getcwd()) + args.output)
 
 # Machine-specific variables
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-seed = 40
+seed = 42
 image_resize = 224
 
 # Timm variables
