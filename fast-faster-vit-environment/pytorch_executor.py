@@ -24,6 +24,7 @@ import albumentations
 import albumentations.pytorch
 
 from PIL import Image
+from PIL.Image import Palette
 from timm import utils
 from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
@@ -51,7 +52,7 @@ output_path = str(str(os.getcwd()) + args.output)
 
 # Machine-specific variables
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-seed = 42
+seed = 40
 image_resize = 224
 
 # Timm variables
@@ -88,12 +89,18 @@ class STMaskedImageDataset(Dataset):
         # Convert to raw byte array
         image = np.asarray(Image.open(path).convert("RGB"))
         mask = np.asarray(Image.open(mpath).convert("RGB"))
+
+        # Add mask to image
+        masked = np.where(mask == 0, torch.from_numpy(image), 0)
+
         # Format/adjust image
         if self.aug:
-            image = self.aug(image=image, mask=mask)
-            # plt.imshow(image["image"].permute(1, 2, 0))
+            augmented = self.aug(image=masked)
+            out_img = augmented["image"]  # .permute(1, 2, 0) for debugging
+        else:
+            out_img = torch.from_numpy(masked)
         label = self.labels[item]
-        return image["image"], label
+        return out_img, label
 
 
 def env_setup():
