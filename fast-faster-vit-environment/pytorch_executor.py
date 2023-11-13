@@ -13,6 +13,7 @@ import argparse
 import copy
 import traceback
 
+import fastervit
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -353,9 +354,13 @@ def main():
     Probable Hyperparameters:
     batch size, learning rate, number of layers (just choose different variations of the neural network available) 
     """
-    model = create_model(model_name)
+    if "faster_vit" in model_name:
+        model = faster_vit_0_224(depths=[2, 2, 4, 2], drop_path_rate=0.0, norm_layer=nn.BatchNorm2d, act_layer=nn.GELU)
+    else:
+        model = create_model(model_name)
 
     if pretrained_model == "":
+
         train_model(model, model_name)
 
         # Save the model
