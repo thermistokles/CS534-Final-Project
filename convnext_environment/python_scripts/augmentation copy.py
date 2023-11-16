@@ -30,8 +30,8 @@ for i in range(len(imageData)):
         il_neg.append(cv2.resize(cv2.imread(image,cv2.IMREAD_COLOR),[512,512]))
 
 transform = A.Compose([
-    A.Rotate(limit=20, p=1),
-    A.ShiftScaleRotate(shift_limit=0, scale_limit=0.15, rotate_limit=0, p=1),
+    A.Rotate(limit=10, p=1),
+    A.ShiftScaleRotate(shift_limit=0, scale_limit=0.05, rotate_limit=0, p=1),
 ])
 
 print("Running image transforms")
@@ -43,8 +43,8 @@ for i in range(20000):
     neg_img = random.choice(il_neg)
     pos_img_transformed = cv2.resize(transform(image=pos_img)["image"],[224,224])
     neg_img_transformed = cv2.resize(transform(image=neg_img)["image"],[224,224])
-    pos_filename = f"augmentation/posadjusted-{i:05d}.png"
-    neg_filename = f"augmentation/negadjusted-{i:05d}.png"
+    pos_filename = f"aug2/posadjusted-{i:05d}.png"
+    neg_filename = f"aug2/negadjusted-{i:05d}.png"
     cv2.imwrite(pos_filename,pos_img_transformed)
     cv2.imwrite(neg_filename,neg_img_transformed)
 print("")

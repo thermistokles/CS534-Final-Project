@@ -14,8 +14,18 @@ from keras.applications.convnext import LayerScale
 
 load_model = tf.keras.models.load_model
 
-MODEL_NAME = "results/convnext_small-augmented.keras"
-model = load_model(MODEL_NAME,custom_objects={
+MODEL_TINY = "cvnext-tiny.keras"
+mt = load_model(MODEL_TINY,custom_objects={
+    "LayerScale":LayerScale
+})
+
+MODEL_SMALL = "cvnext-small.keras"
+ms = load_model(MODEL_TINY,custom_objects={
+    "LayerScale":LayerScale
+})
+
+MODEL_BASE = "cvnext-base.keras"
+mb = load_model(MODEL_BASE,custom_objects={
     "LayerScale":LayerScale
 })
 
@@ -35,8 +45,10 @@ for image in imageData.path:
 npImageList = np.array(imageList)
 ytest = keras.utils.to_categorical(imageData.label)
 
-test_loss,test_acc = model.evaluate(npImageList,ytest,verbose=1)
-predictions = model.predict(npImageList, verbose=1)
+print(f"--------------------------------\n{MODEL_TINY}\n--------------------------------\n")
+
+test_loss,test_acc = mt.evaluate(npImageList,ytest,verbose=1)
+predictions = mt.predict(npImageList, verbose=1)
 predictions = np.argmax(predictions, axis=1)
 ground_truths = imageData.label
 print("\nAccuracy: "+str(test_acc)+", Loss: "+str(test_loss))
@@ -46,6 +58,40 @@ cm = confusion_matrix(ground_truths, predictions, normalize="all")
 print("Confusion Matrix:")
 print(str(cm))
 
-print("F1 Score: %.4f\n" % (f1_score(ground_truths, predictions)))
+print("F1 Score: %.4f" % (f1_score(ground_truths, predictions)))
+
+print("MCC Score: %.4f\n" % (matthews_corrcoef(ground_truths, predictions)))
+
+print(f"--------------------------------\n{MODEL_SMALL}\n--------------------------------\n")
+
+test_loss,test_acc = ms.evaluate(npImageList,ytest,verbose=1)
+predictions = ms.predict(npImageList, verbose=1)
+predictions = np.argmax(predictions, axis=1)
+ground_truths = imageData.label
+print("\nAccuracy: "+str(test_acc)+", Loss: "+str(test_loss))
+
+ # Confusion matrix
+cm = confusion_matrix(ground_truths, predictions, normalize="all")
+print("Confusion Matrix:")
+print(str(cm))
+
+print("F1 Score: %.4f" % (f1_score(ground_truths, predictions)))
+
+print("MCC Score: %.4f\n" % (matthews_corrcoef(ground_truths, predictions)))
+
+print(f"--------------------------------\n{MODEL_BASE}\n--------------------------------\n")
+
+test_loss,test_acc = mb.evaluate(npImageList,ytest,verbose=1)
+predictions = mb.predict(npImageList, verbose=1)
+predictions = np.argmax(predictions, axis=1)
+ground_truths = imageData.label
+print("\nAccuracy: "+str(test_acc)+", Loss: "+str(test_loss))
+
+ # Confusion matrix
+cm = confusion_matrix(ground_truths, predictions, normalize="all")
+print("Confusion Matrix:")
+print(str(cm))
+
+print("F1 Score: %.4f" % (f1_score(ground_truths, predictions)))
 
 print("MCC Score: %.4f\n" % (matthews_corrcoef(ground_truths, predictions)))

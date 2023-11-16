@@ -24,8 +24,8 @@ for i in range(20000):
 
 npImageList = np.array(imageList)
 
-model = tf.keras.applications.ConvNeXtTiny(
-    model_name="convnext_tiny",
+model = tf.keras.applications.ConvNeXtBase(
+    model_name="convnext_base",
     include_top=True,
     include_preprocessing=True,
     weights=None,
@@ -65,7 +65,7 @@ model.summary()
 model.fit(
     trainingData,
     label_training,
-    batch_size=64,
+    batch_size=32,
     verbose=1,
     epochs=10000,
     validation_data=[
@@ -77,5 +77,5 @@ model.fit(
         lr_reduction
     ]
 )
-MODEL_NAME = "cvnext-tiny.keras"
+MODEL_NAME = "cvnext-base.keras"
 model.save(MODEL_NAME)

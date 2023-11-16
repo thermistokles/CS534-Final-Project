@@ -5,38 +5,22 @@ import keras
 import matplotlib.pyplot as plt
 import os
 import cv2
+import sys
+import datetime
 
-from keras.preprocessing.image import ImageDataGenerator
-load_model = tf.keras.models.load_model
+from keras.optimizers import SGD
 
-mfiles=[]
-mpaths = []
-for dirname, _, filenames in os.walk('png_masks'):
-    for filename in filenames:
-        path = os.path.join(dirname, filename)    
-        mpaths.append(path)
-        mfiles.append(filename)
-
-files=[]
-paths = []
-for dirname, _, filenames in os.walk('png_images'):
-    for filename in filenames:
-        path = os.path.join(dirname, filename)    
-        paths.append(path)
-        files.append(filename)
-
-imageData=pd.read_csv('stage_1_train_images.csv')
-
-images='png_images'
-masks='png_masks'
-# label = has_pneumo
-imageData['label']=imageData['has_pneumo']
-imageData['path']=imageData['new_filename'].apply(lambda x:os.path.join(images,x))
-imageData['mpath']=imageData['new_filename'].apply(lambda x:os.path.join(masks,x))
+print(f"SYSTEM TIME AT EXECUTION: {datetime.datetime.now()}")
 
 imageList = []
-for image in imageData.path:
-    imageList.append(cv2.resize(cv2.imread(image,cv2.IMREAD_COLOR),[224,224]))
+labels = []
+for i in range(20000):
+    pos_filename = f"augmentation/posadjusted-{i:05d}.png"
+    neg_filename = f"augmentation/negadjusted-{i:05d}.png"
+    imageList.append(cv2.imread(pos_filename,cv2.IMREAD_COLOR))
+    labels.append(1)
+    imageList.append(cv2.imread(neg_filename,cv2.IMREAD_COLOR))
+    labels.append(0)
 
 npImageList = np.array(imageList)
 
@@ -52,11 +36,11 @@ model = tf.keras.applications.ConvNeXtSmall(
     classifier_activation="softmax",
 )
 
-ytrain = keras.utils.to_categorical(imageData.label)
+ytrain = keras.utils.to_categorical(labels)
 
 indicies = np.random.permutation(len(imageList))
-indicies_training = indicies[:8540]
-indicies_validation = indicies[8540:]
+indicies_training = indicies[:32000]
+indicies_validation = indicies[32000:]
 
 trainingData = npImageList[indicies_training,:,:,:]
 validationData = npImageList[indicies_validation,:,:,:]
@@ -64,23 +48,24 @@ validationData = npImageList[indicies_validation,:,:,:]
 label_training = ytrain[indicies_training,:]
 label_validation = ytrain[indicies_validation,:]
 
-model.compile(optimizer="Adam",loss="categorical_crossentropy",metrics=["acc"])
+## model.compile(optimizer="Adam",loss="categorical_crossentropy",metrics=["acc"])
+model.compile(optimizer=SGD(lr=0.01),loss="categorical_crossentropy",metrics=["acc"])
 early_stopping = keras.callbacks.EarlyStopping( 
     monitor='val_loss', 
-    patience=10 
+    patience=50 
 )
 lr_reduction = keras.callbacks.ReduceLROnPlateau(
     monitor='val_loss', 
-    factor=.5, 
-    patience=3, 
+    factor=.5,
+    patience=3,
     verbose=1 
 )
-aug = ImageDataGenerator(rotation_range=20, zoom_range=0.15, fill_mode="nearest")
 
 model.summary()
 model.fit(
-    aug.flow(trainingData,
-    label_training,batch_size=64),
+    trainingData,
+    label_training,
+    batch_size=32,
     verbose=1,
     epochs=10000,
     validation_data=[
@@ -92,26 +77,5 @@ model.fit(
         lr_reduction
     ]
 )
-MODEL_NAME = "convnext_small-augmented.keras"
+MODEL_NAME = "cvnext-small.keras"
 model.save(MODEL_NAME)
-
-model = load_model(MODEL_NAME)
-
-imageData=pd.read_csv('stage_1_test_images.csv')
-
-images='png_images'
-masks='png_masks'
-# label = has_pneumo
-imageData['label']=imageData['has_pneumo']
-imageData['path']=imageData['new_filename'].apply(lambda x:os.path.join(images,x))
-imageData['mpath']=imageData['new_filename'].apply(lambda x:os.path.join(masks,x))
-
-imageList = []
-for image in imageData.path:
-    imageList.append(cv2.resize(cv2.imread(image,cv2.IMREAD_COLOR),[224,224]))
-
-npImageList = np.array(imageList)
-ytest = keras.utils.to_categorical(imageData.label)
-
-test_loss,test_acc = model.evaluate(npImageList,ytest,verbose=1)
-print("Accuracy: "+str(test_acc)+", Loss: "+str(test_loss))
