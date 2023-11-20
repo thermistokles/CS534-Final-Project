@@ -19,6 +19,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import os
 import sklearn as skl
+import timm.models.convnext
 import torch.nn as nn
 import torch.cuda
 import albumentations
@@ -54,7 +55,7 @@ pretrained_model = args.pretrained_model
 
 # Machine-specific variables
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-seed = 40
+seed = 42
 image_resize = 224
 
 # Timm variables
