@@ -1,0 +1,79 @@
+Preprocessing:
+Grayscale conversion
+Resize((224, 224))
+Normalize(mean=[0.5], std=[0.5])
+
+Parameters:
+num_epochs = 1
+lr = 0.001
+Opt = Adam
+Loss = BCEWithLogitsLoss
+
+Accuracy: 0.8550
+F1 Score: 0.5683
+Confusion Matrix:
+[[1042   40]
+ [ 159  131]]
+MCC Score: 0.5127
+
+===================================================================================
+
+Preprocessing:
+Grayscale conversion
+Resize((224, 224))
+Normalize(mean=[0.5], std=[0.5])
+
+Parameters:
+num_epochs = 20
+lr = 0.001
+Opt = Adam
+Loss = BCEWithLogitsLoss
+
+Accuracy: 0.8506
+F1 Score: 0.6496
+Confusion Matrix:
+[[977 105]
+ [100 190]]
+MCC Score: 0.5547
+
+===================================================================================
+
+Preprocessing:
+Grayscale conversion
+Resize((224, 224))
+Normalize(mean=[0.5], std=[0.5])
+Random undersampling
+
+Parameters:
+num_epochs = 1
+lr = 0.001
+Opt = Adam
+Loss = BCEWithLogitsLoss
+
+Accuracy: 0.7544
+F1 Score: 0.6021
+Confusion Matrix:
+[[780 302]
+ [ 35 255]]
+MCC Score: 0.4990
+
+===================================================================================
+
+Preprocessing:
+Grayscale conversion
+Resize((224, 224))
+Normalize(mean=[0.5], std=[0.5])
+Random undersampling
+
+Parameters:
+num_epochs = 20
+lr = 0.001
+Opt = Adam
+Loss = BCEWithLogitsLoss
+
+Accuracy: 0.7544
+F1 Score: 0.6021
+Confusion Matrix:
+[[780 302]
+ [ 35 255]]
+MCC Score: 0.4990
