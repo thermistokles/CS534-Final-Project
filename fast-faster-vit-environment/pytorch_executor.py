@@ -388,9 +388,13 @@ def main():
     batch size, learning rate, number of layers (just choose different variations of the neural network available) 
     """
     if "faster_vit" in model_name:
-        model = faster_vit_0_224(depths=[2, 2, 2, 2], drop_path_rate=0.0, norm_layer=nn.BatchNorm2d, act_layer=nn.GELU)
+        model = faster_vit_0_224(depths=[2, 2, 2, 2],
+                                 drop_path_rate=0.0,
+                                 norm_layer=nn.BatchNorm2d,
+                                 act_layer=nn.GELU,
+                                 num_classes=2)
     else:
-        model = create_model(model_name)
+        model = create_model(model_name, num_classes=2)
 
     if pretrained_model == "":
 
