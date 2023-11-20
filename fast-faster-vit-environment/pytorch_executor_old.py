@@ -28,7 +28,7 @@ from PIL import Image
 from timm import utils
 from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
-from tqdm.auto import tqdm
+from tqdm import tqdm
 
 # Models
 from timm.models import *
@@ -150,6 +150,7 @@ def data_preprocessing():
     test_image_data["mpath"] = test_image_data["new_filename"].apply(lambda x: os.path.join(masks_exp, x))
 
     # Symmetrize data types (same number of cases for having and not having pneumothorax)
+    # Use Image Augmentation, 4000 images is probably not enough for a good model (maybe look into RandArgument)
     num_0 = len(total_train_data.loc[total_train_data["has_pneumo"] == 0])
     num_1 = len(total_train_data.loc[total_train_data["has_pneumo"] == 1])
 
@@ -213,77 +214,17 @@ def data_preprocessing():
     testDataLoader = DataLoader(testDataSet, shuffle=False, batch_size=batch_size)
 
 
+# Needs hyperparameter tuning, most of the implementation comes from the first reference
 def train_model(model=None, specifier=""):
     """
-    Trains and validates the neural network model
-    :param model: neural network to train/validate
+    Trains the neural network model
+    :param model: neural network to train
     :param specifier: model name used for saving results
     :return: (void)
     """
-
-    def train(data_loader):
-        """
-        Training phase for model
-        :param data_loader: Associated data loader for phase
-        :return: A tuple consisting of the Epoch Loss and the Epoch Accuracy
-        """
-        model.train()
-
-        run_loss = 0
-        correct_predictions = 0
-
-        for image, label in tqdm(data_loader, ascii=True):
-            image = image.to(device)
-            label = label.to(device)
-
-            optimizer.zero_grad()
-
-            with torch.set_grad_enabled(True):
-                outputs = model(image)
-                loss = loss_fn(outputs, label)
-
-                loss.backward()
-                optimizer.step()
-
-                _, predictions = torch.max(outputs, 1)
-
-            run_loss += loss.item() * image.size(0)
-            correct_predictions += torch.sum(predictions == label.data)
-
-        # 0: Epoch Loss, 1: Epoch Accuracy
-        return run_loss / len(data_loader.dataset), correct_predictions.double() / len(data_loader.dataset)
-
-    def evaluate(data_loader):
-        """
-        Evaluation/validation phase for model
-        :param data_loader: Associated data loader for phase
-        :return: A tuple consisting of the Epoch Loss and the Epoch Accuracy
-        """
-        model.eval()
-
-        run_loss = 0
-        correct_predictions = 0
-
-        for image, label in tqdm(data_loader, ascii=True):
-            image = image.to(device)
-            label = label.to(device)
-
-            optimizer.zero_grad()
-
-            with torch.no_grad():
-                outputs = model(image)
-                loss = loss_fn(outputs, label)
-
-                _, predictions = torch.max(outputs, 1)
-
-            run_loss += loss.item() * image.size(0)
-            correct_predictions += torch.sum(predictions == label.data)
-
-        # 0: Epoch Loss, 1: Epoch Accuracy
-        return run_loss / len(data_loader.dataset), correct_predictions.double() / len(data_loader.dataset)
-
     if model is not None:
         try:
+
             print('-' * 20)
             print("Training: " + specifier)
             print('-' * 20 + '\n')
@@ -294,7 +235,8 @@ def train_model(model=None, specifier=""):
             model = model.to(device)
 
             optimizer = torch.optim.Adam(model.parameters())
-            loss_fn = nn.CrossEntropyLoss()
+            loss_fcn = nn.CrossEntropyLoss()
+            dataloaders = dict({"train": trainDataLoader, "validation": validationDataLoader})
 
             for epoch in range(num_epochs):
 
@@ -302,15 +244,42 @@ def train_model(model=None, specifier=""):
                 print("Epoch: " + str(epoch + 1) + " out of " + str(num_epochs))
                 print('-' * 20)
 
-                epoch_loss, epoch_acc = train(trainDataLoader)
-                print("\nEpoch Summary: {} Loss: {:.4f} Acc: {:.4f}".format("Train", epoch_loss, epoch_acc))
+                for phase in ["train", "validation"]:
+                    if phase == "train":
+                        model.train()
+                    else:
+                        model.eval()
 
-                epoch_loss, epoch_acc = evaluate(testDataLoader)
-                print("\nEpoch Summary: {} Loss: {:.4f} Acc: {:.4f}".format("Train", epoch_loss, epoch_acc))
+                    running_loss = 0
+                    running_corrects = 0
 
-                if epoch_acc >= m_best_acc:
-                    m_best_acc = epoch_acc
-                    m_best_weights = copy.deepcopy(model.state_dict())
+                    for inputs, labels in tqdm(dataloaders[phase], position=0, leave=True):
+                        inputs = inputs.to(device)
+                        labels = labels.to(device)
+
+                        optimizer.zero_grad()
+
+                        with torch.set_grad_enabled(phase == "train"):
+                            outputs = model(inputs)
+                            loss = loss_fcn(outputs, labels)
+
+                            _, predictions = torch.max(outputs, 1)
+
+                            if phase == "train":
+                                loss.backward()
+                                optimizer.step()
+
+                        running_loss += loss.item() * inputs.size(0)
+                        running_corrects += torch.sum(predictions == labels.data)
+
+                    epoch_loss = running_loss / len(dataloaders[phase].dataset)
+                    epoch_acc = running_corrects.double() / len(dataloaders[phase].dataset)
+
+                    print("\nEpoch Summary: {} Loss: {:.4f} Acc: {:.4f}".format(phase, epoch_loss, epoch_acc))
+
+                    if phase == "validation" and epoch_acc >= m_best_acc:
+                        m_best_acc = epoch_acc
+                        m_best_weights = copy.deepcopy(model.state_dict())
 
             model.load_state_dict(m_best_weights)
             best_model_weights[specifier] = (m_best_weights, m_best_acc)
@@ -325,7 +294,7 @@ def train_model(model=None, specifier=""):
     pass
 
 
-# Most of the implementation comes from first reference
+# Most of the implementation comes from first Reference
 def test_model(model=None, specifier=""):
     """
     Test the given trained model for final evaluation
@@ -346,7 +315,7 @@ def test_model(model=None, specifier=""):
             ground_truths = []
 
             with torch.no_grad():
-                for img, label in tqdm(testDataLoader, ascii=True):
+                for img, label in tqdm(testDataLoader, position=0, leave=True):
                     output = torch.nn.functional.softmax(model(img.to(device)), dim=1)
                     _, index = torch.topk(output, k=1, dim=1)
                     predictions.append(index.flatten())
