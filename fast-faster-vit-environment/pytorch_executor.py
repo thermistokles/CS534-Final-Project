@@ -88,26 +88,18 @@ class STMaskedImageDataset(Dataset):
     def __getitem__(self, item):
         path = self.images[item]
         mpath = self.masks[item]
-        """
-        lbl = self.labels[item]
-        if lbl == 0:
-            pass
-        """
+
         # Convert to raw byte array
         image = np.asarray(Image.open(path).convert("RGB"))
         mask = np.asarray(Image.open(mpath).convert("RGB"))
-        # plt.imshow(image)
-        # plt.imshow(mask)
 
         # Add mask to image
         masked = np.where(mask == 0, torch.from_numpy(image), 0)
-        # plt.imshow(masked)
 
         # Format/adjust image
         if self.aug:
             augmented = self.aug(image=masked)
             out_img = augmented["image"]  # .permute(1, 2, 0) for debugging
-            # plt.imshow(out_img.permute(1, 2, 0))
         else:
             out_img = torch.from_numpy(masked)
         label = self.labels[item]
