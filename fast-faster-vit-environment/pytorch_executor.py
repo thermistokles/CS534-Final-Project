@@ -54,7 +54,7 @@ pretrained_model = args.pretrained_model
 
 # Machine-specific variables
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-seed = 42
+seed = 40
 image_resize = 224
 
 # Timm variables
@@ -94,7 +94,7 @@ class STMaskedImageDataset(Dataset):
         mask = np.asarray(Image.open(mpath).convert("RGB"))
 
         # Add mask to image
-        masked = np.where(mask == 0, torch.from_numpy(image), 0)
+        masked = np.where(mask == 255, image, np.clip(image.astype(int) + 50, 0, 255)).astype(np.uint8)
 
         # Format/adjust image
         if self.aug:
