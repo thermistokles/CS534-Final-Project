@@ -11,15 +11,16 @@ Notable References:
 """
 import argparse
 import copy
+import random
 import traceback
 
+import cv2
 import fastervit
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import os
 import sklearn as skl
-import timm.models.convnext
 import torch.nn as nn
 import torch.cuda
 import albumentations
@@ -44,6 +45,7 @@ argParser.add_argument("-e", "--epochs", type=int, default=100, help="Number of 
 argParser.add_argument("-b", "--batch_size", type=int, default=64, help="Batch Size")
 argParser.add_argument("-o", "--output", type=str, default="\\output", help="Output directory")
 argParser.add_argument("-pm", "--pretrained_model", type=str, default="", help="Path to pretrained model")
+argParser.add_argument("-um", "--use_masks", type=bool, default=False, help="Whether to apply masks or not")
 args = argParser.parse_args()
 
 full_image_path = args.path
@@ -52,6 +54,7 @@ num_epochs = args.epochs
 batch_size = args.batch_size
 output_path = str(str(os.getcwd()) + args.output)
 pretrained_model = args.pretrained_model
+use_masks = args.use_masks
 
 # Machine-specific variables
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -77,10 +80,21 @@ class STMaskedImageDataset(Dataset):
     Sequential Tensor Image Dataset
     """
 
-    def __init__(self, image_list, mask_list, label_list, augmentation=None):
+    aug1 = albumentations.Compose([
+        albumentations.Rotate(limit=15, always_apply=True, border_mode=cv2.BORDER_CONSTANT),
+        albumentations.HorizontalFlip()
+    ])
+
+    aug2 = albumentations.Compose([
+        albumentations.Rotate(limit=25, always_apply=True, border_mode=cv2.BORDER_CONSTANT),
+        albumentations.HorizontalFlip()
+    ])
+
+    def __init__(self, image_list, mask_list, label_list, aug_list, augmentation=None):
         self.images = image_list
         self.masks = mask_list
         self.labels = label_list
+        self.aug_list = aug_list
         self.aug = augmentation
 
     def __len__(self):
@@ -95,14 +109,23 @@ class STMaskedImageDataset(Dataset):
         mask = np.asarray(Image.open(mpath).convert("RGB"))
 
         # Add mask to image
-        masked = np.where(mask == 255, image, np.clip(image.astype(int) + 50, 0, 255)).astype(np.uint8)
+        if use_masks:
+            image = np.where(mask == 255, image, np.clip(image.astype(int) + 50, 0, 255)).astype(np.uint8)
+
+        # Augment
+        if self.aug_list[item] == 1:
+            a1 = self.aug1(image=image)
+            image = a1["image"]
+        elif self.aug_list[item] == 2:
+            a2 = self.aug2(image=image)
+            image = a2["image"]
 
         # Format/adjust image
         if self.aug:
-            augmented = self.aug(image=masked)
+            augmented = self.aug(image=image)
             out_img = augmented["image"]  # .permute(1, 2, 0) for debugging
         else:
-            out_img = torch.from_numpy(masked)
+            out_img = torch.from_numpy(image)
         label = self.labels[item]
         return out_img, label
 
@@ -118,6 +141,7 @@ def env_setup():
         torch.backends.cudnn.deterministic = True
         torch.cuda.manual_seed(seed)
 
+    random.seed(seed)
     np.random.seed(seed)
     utils.random_seed(seed, 0)
     torch.manual_seed(seed)
@@ -167,13 +191,33 @@ def data_preprocessing():
         test_image_data = pd.merge(df, test_image_data.loc[test_image_data["has_pneumo"] == 0], how="outer")
         pass
 
-    total_train_data = total_train_data.sample(random_state=seed, frac=1)
-    test_image_data = test_image_data.sample(random_state=seed, frac=1)
+    total_train_data["synth_aug"] = 0
+    test_image_data["synth_aug"] = 0
+
+    ttd_cpy1 = total_train_data.copy(deep=True)
+    tid_cpy1 = test_image_data.copy(deep=True)
+
+    ttd_cpy1["synth_aug"] = 1
+    tid_cpy1["synth_aug"] = 1
+
+    ttd_cpy2 = total_train_data.copy(deep=True)
+    tid_cpy2 = test_image_data.copy(deep=True)
+
+    ttd_cpy2["synth_aug"] = 2
+    tid_cpy2["synth_aug"] = 2
+
+    total_train_data = pd.concat([pd.concat([ttd_cpy1, ttd_cpy2]), total_train_data])
+    test_image_data = pd.concat([pd.concat([tid_cpy1, tid_cpy2]), test_image_data])
+
+    total_train_data = total_train_data.sample(random_state=seed, frac=1).reset_index(drop=True)
+    test_image_data = test_image_data.sample(random_state=seed, frac=1).reset_index(drop=True)
     train_images, val_images, train_labels, val_labels = skl.model_selection.train_test_split(
         pd.DataFrame({"path": total_train_data["path"].tolist(),
                       "mpath": total_train_data["mpath"].tolist()}),
-        total_train_data["has_pneumo"].tolist(),
-        stratify=total_train_data["has_pneumo"].tolist(),
+        pd.DataFrame({"label": total_train_data["has_pneumo"].tolist(),
+                      "synth_aug": total_train_data["synth_aug"].tolist()}),
+        stratify=pd.DataFrame({"label": total_train_data["has_pneumo"].tolist(),
+                               "synth_aug": total_train_data["synth_aug"].tolist()}),
         train_size=0.9)
 
     # Initialize timm-specific fields
@@ -189,20 +233,24 @@ def data_preprocessing():
         albumentations.Normalize(max_pixel_value=255, always_apply=True),
         albumentations.pytorch.transforms.ToTensorV2()
     ])
+    # albumentations.ColorJitter(saturation=[1.5, 1.5], brightness=[1.5, 1.5], always_apply=True),
 
     trainDataSet = STMaskedImageDataset(train_images["path"].tolist(),
                                         train_images["mpath"].tolist(),
-                                        train_labels, aug)
+                                        train_labels["label"].tolist(),
+                                        train_labels["synth_aug"].tolist(), aug)
     trainDataLoader = DataLoader(trainDataSet, shuffle=True, batch_size=batch_size)
 
     validationDataSet = STMaskedImageDataset(val_images["path"].tolist(),
                                              val_images["mpath"].tolist(),
-                                             val_labels, aug)
+                                             val_labels["label"].tolist(),
+                                             val_labels["synth_aug"].tolist(), aug)
     validationDataLoader = DataLoader(validationDataSet, shuffle=False, batch_size=batch_size)
 
     testDataSet = STMaskedImageDataset(test_image_data["path"].tolist(),
                                        test_image_data["mpath"].tolist(),
-                                       test_image_data["has_pneumo"].tolist(), aug)
+                                       test_image_data["has_pneumo"].tolist(),
+                                       test_image_data["synth_aug"].tolist(), aug)
     testDataLoader = DataLoader(testDataSet, shuffle=False, batch_size=batch_size)
 
 
