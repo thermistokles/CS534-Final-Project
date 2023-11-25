@@ -45,7 +45,7 @@ argParser.add_argument("-e", "--epochs", type=int, default=100, help="Number of 
 argParser.add_argument("-b", "--batch_size", type=int, default=64, help="Batch Size")
 argParser.add_argument("-o", "--output", type=str, default="\\output", help="Output directory")
 argParser.add_argument("-pm", "--pretrained_model", type=str, default="", help="Path to pretrained model")
-argParser.add_argument("-um", "--use_masks", type=bool, default=False, help="Whether to apply masks or not")
+argParser.add_argument("-um", "--use_masks", action="store_true", help="Whether to apply masks or not")
 args = argParser.parse_args()
 
 full_image_path = args.path
@@ -347,7 +347,7 @@ def train_model(model=None, specifier=""):
                 print("\nEpoch Summary: {} Loss: {:.4f} Acc: {:.4f}".format("Train", epoch_loss, epoch_acc))
 
                 epoch_loss, epoch_acc = evaluate(testDataLoader)
-                print("\nEpoch Summary: {} Loss: {:.4f} Acc: {:.4f}".format("Train", epoch_loss, epoch_acc))
+                print("\nEpoch Summary: {} Loss: {:.4f} Acc: {:.4f}".format("Evaluation", epoch_loss, epoch_acc))
 
                 if epoch_acc >= m_best_acc:
                     m_best_acc = epoch_acc
@@ -430,6 +430,9 @@ def main():
 
     env_setup()
     data_preprocessing()
+
+    if use_masks:
+        print("[Info]: Using masks\n")
 
     """
     Probable Hyperparameters:
