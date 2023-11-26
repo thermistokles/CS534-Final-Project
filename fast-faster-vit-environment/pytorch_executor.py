@@ -273,23 +273,23 @@ def train_model(model=None, specifier=""):
         run_loss = 0
         correct_predictions = 0
 
-        for image, label in tqdm(data_loader, ascii=True):
-            image = image.to(device)
-            label = label.to(device)
+        for images, labels in tqdm(data_loader, ascii=True):
+            images = images.to(device)
+            labels = labels.to(device)
 
             optimizer.zero_grad()
 
             with torch.set_grad_enabled(True):
-                outputs = model(image)
-                loss = loss_fn(outputs, label)
+                outputs = model(images)
+                loss = loss_fn(outputs, labels)
 
                 loss.backward()
                 optimizer.step()
 
                 _, predictions = torch.max(outputs, 1)
 
-            run_loss += loss.item() * image.size(0)
-            correct_predictions += torch.sum(predictions == label.data)
+            run_loss += loss.item() * images.size(0)
+            correct_predictions += torch.sum(predictions == labels.data)
 
         # 0: Epoch Loss, 1: Epoch Accuracy
         return run_loss / len(data_loader.dataset), correct_predictions.double() / len(data_loader.dataset)
@@ -305,20 +305,20 @@ def train_model(model=None, specifier=""):
         run_loss = 0
         correct_predictions = 0
 
-        for image, label in tqdm(data_loader, ascii=True):
-            image = image.to(device)
-            label = label.to(device)
+        for images, labels in tqdm(data_loader, ascii=True):
+            images = images.to(device)
+            labels = labels.to(device)
 
             optimizer.zero_grad()
 
             with torch.no_grad():
-                outputs = model(image)
-                loss = loss_fn(outputs, label)
+                outputs = model(images)
+                loss = loss_fn(outputs, labels)
 
                 _, predictions = torch.max(outputs, 1)
 
-            run_loss += loss.item() * image.size(0)
-            correct_predictions += torch.sum(predictions == label.data)
+            run_loss += loss.item() * images.size(0)
+            correct_predictions += torch.sum(predictions == labels.data)
 
         # 0: Epoch Loss, 1: Epoch Accuracy
         return run_loss / len(data_loader.dataset), correct_predictions.double() / len(data_loader.dataset)
@@ -447,22 +447,27 @@ def main():
     else:
         model = create_model(model_name, num_classes=2)
 
+    if use_masks:
+        spec = model_name + "_masks"
+    else:
+        spec = model_name
+
     if pretrained_model == "":
 
-        train_model(model, model_name)
+        train_model(model, spec)
 
         # Save the model
         if not os.path.exists(output_path):
             os.makedirs(output_path)
 
-        torch.save(model.state_dict(), f"{output_path}/{model_name}.pth")
+        torch.save(model.state_dict(), f"{output_path}/{spec}.pth")
     else:
         weights = torch.load(str(str(os.getcwd()) + pretrained_model))
         model.load_state_dict(weights)
         model = model.to(device)
 
     # Test the model
-    test_model(model, model_name)
+    test_model(model, spec)
     pass
 
 
