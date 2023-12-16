@@ -1,0 +1,17 @@
+2023-11-20 18:21:31.968295: I tensorflow/core/platform/cpu_feature_guard.cc:193] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  AVX2 AVX512F AVX512_VNNI FMA
+To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.
+2023-11-20 18:21:32.163204: I tensorflow/core/util/port.cc:104] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+2023-11-20 18:21:33.629949: W tensorflow/compiler/xla/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library 'libnvinfer.so.7'; dlerror: libnvinfer.so.7: cannot open shared object file: No such file or directory; LD_LIBRARY_PATH: /cm/shared/apps/cudnn8.1-cuda11.2/8.1.1.33/lib64:/cm/local/apps/cuda/libs/current/lib64:/cm/shared/apps/cuda11.2/toolkit/11.2.2/targets/x86_64-linux/lib:/cm/shared/spack/opt/spack/linux-ubuntu20.04-x86_64/gcc-12.1.0/python-3.8.13-slu6jvwlh43vemachntuxtqyqbxpltdg/lib:/cm/shared/apps/slurm/current/lib64/slurm:/cm/shared/apps/slurm/current/lib64
+2023-11-20 18:21:33.630070: W tensorflow/compiler/xla/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library 'libnvinfer_plugin.so.7'; dlerror: libnvinfer_plugin.so.7: cannot open shared object file: No such file or directory; LD_LIBRARY_PATH: /cm/shared/apps/cudnn8.1-cuda11.2/8.1.1.33/lib64:/cm/local/apps/cuda/libs/current/lib64:/cm/shared/apps/cuda11.2/toolkit/11.2.2/targets/x86_64-linux/lib:/cm/shared/spack/opt/spack/linux-ubuntu20.04-x86_64/gcc-12.1.0/python-3.8.13-slu6jvwlh43vemachntuxtqyqbxpltdg/lib:/cm/shared/apps/slurm/current/lib64/slurm:/cm/shared/apps/slurm/current/lib64
+2023-11-20 18:21:33.630077: W tensorflow/compiler/tf2tensorrt/utils/py_utils.cc:38] TF-TRT Warning: Cannot dlopen some TensorRT libraries. If you would like to use Nvidia GPU with TensorRT, please make sure the missing libraries mentioned above are installed properly.
+2023-11-20 18:21:37.093937: I tensorflow/core/platform/cpu_feature_guard.cc:193] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  AVX2 AVX512F AVX512_VNNI FMA
+To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.
+2023-11-20 18:21:40.014824: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1613] Created device /job:localhost/replica:0/task:0/device:GPU:0 with 22290 MB memory:  -> device: 0, name: NVIDIA A30, pci bus id: 0000:ca:00.0, compute capability: 8.0
+2023-11-20 18:21:40.017542: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1613] Created device /job:localhost/replica:0/task:0/device:GPU:1 with 22290 MB memory:  -> device: 1, name: NVIDIA A30, pci bus id: 0000:e3:00.0, compute capability: 8.0
+[ WARN:0@15.557] global loadsave.cpp:248 findDecoder imread_('png_images/0_test_1_.png'): can't open/read file: check file path/integrity
+Traceback (most recent call last):
+  File "chain-eval.py", line 43, in <module>
+    imageList.append(cv2.resize(cv2.imread(image,cv2.IMREAD_COLOR),[224,224]))
+cv2.error: OpenCV(4.8.1) /io/opencv/modules/imgproc/src/resize.cpp:4062: error: (-215:Assertion failed) !ssize.empty() in function 'resize'
+
+I am done
