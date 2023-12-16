@@ -462,7 +462,7 @@ def main():
 
         torch.save(model.state_dict(), f"{output_path}/{spec}.pth")
     else:
-        weights = torch.load(str(str(os.getcwd()) + pretrained_model))
+        weights = torch.load(str(str(os.getcwd()) + pretrained_model), map_location=device)
         model.load_state_dict(weights)
         model = model.to(device)
 
