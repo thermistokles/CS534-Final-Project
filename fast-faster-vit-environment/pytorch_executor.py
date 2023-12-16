@@ -1,5 +1,5 @@
 """
-Execution script for timms
+Baseline Trials Execution Script
 
 Author: Ivan Klevanski
 
@@ -179,6 +179,7 @@ def data_preprocessing():
         total_train_data = pd.merge(df, total_train_data.loc[total_train_data["has_pneumo"] == 0], how="outer")
         pass
 
+    # Label Symmetrization / Class balancing based on minority label
     num_0 = len(test_image_data.loc[test_image_data["has_pneumo"] == 0])
     num_1 = len(test_image_data.loc[test_image_data["has_pneumo"] == 1])
 
@@ -191,6 +192,7 @@ def data_preprocessing():
         test_image_data = pd.merge(df, test_image_data.loc[test_image_data["has_pneumo"] == 0], how="outer")
         pass
 
+    # Oversampling
     total_train_data["synth_aug"] = 0
     test_image_data["synth_aug"] = 0
 
@@ -206,6 +208,7 @@ def data_preprocessing():
     ttd_cpy2["synth_aug"] = 2
     tid_cpy2["synth_aug"] = 2
 
+    # Create oversampled training and testing datasets
     total_train_data = pd.concat([pd.concat([ttd_cpy1, ttd_cpy2]), total_train_data])
     test_image_data = pd.concat([pd.concat([tid_cpy1, tid_cpy2]), test_image_data])
 
@@ -228,13 +231,14 @@ def data_preprocessing():
     global testDataSet
     global testDataLoader
 
+    # Image post-processing
     aug = albumentations.Compose([
         albumentations.Resize(width=image_resize, height=image_resize),
         albumentations.Normalize(max_pixel_value=255, always_apply=True),
         albumentations.pytorch.transforms.ToTensorV2()
     ])
-    # albumentations.ColorJitter(saturation=[1.5, 1.5], brightness=[1.5, 1.5], always_apply=True),
 
+    # Create torch datasets and dataloaders
     trainDataSet = STMaskedImageDataset(train_images["path"].tolist(),
                                         train_images["mpath"].tolist(),
                                         train_labels["label"].tolist(),
@@ -273,12 +277,14 @@ def train_model(model=None, specifier=""):
         run_loss = 0
         correct_predictions = 0
 
+        # Pass images and labels into device for train cycle
         for images, labels in tqdm(data_loader, ascii=True):
             images = images.to(device)
             labels = labels.to(device)
 
             optimizer.zero_grad()
 
+            # Forward and backward pass to update model
             with torch.set_grad_enabled(True):
                 outputs = model(images)
                 loss = loss_fn(outputs, labels)
@@ -305,12 +311,14 @@ def train_model(model=None, specifier=""):
         run_loss = 0
         correct_predictions = 0
 
+        # Pass images and labels into device for evaluation cycle
         for images, labels in tqdm(data_loader, ascii=True):
             images = images.to(device)
             labels = labels.to(device)
 
             optimizer.zero_grad()
 
+            # Forward pass to get predictions
             with torch.no_grad():
                 outputs = model(images)
                 loss = loss_fn(outputs, labels)
@@ -337,6 +345,7 @@ def train_model(model=None, specifier=""):
             optimizer = torch.optim.Adam(model.parameters())
             loss_fn = nn.CrossEntropyLoss()
 
+            # Epoch train loop
             for epoch in range(num_epochs):
 
                 print('-' * 20)
@@ -366,7 +375,6 @@ def train_model(model=None, specifier=""):
     pass
 
 
-# Most of the implementation comes from first reference
 def test_model(model=None, specifier=""):
     """
     Test the given trained model for final evaluation
@@ -386,8 +394,10 @@ def test_model(model=None, specifier=""):
             predictions = []
             ground_truths = []
 
+            # Pass images and labels into device for test cycle
             with torch.no_grad():
                 for img, label in tqdm(testDataLoader, ascii=True):
+                    # Get normalized label probabilities and allocate predictions
                     output = torch.nn.functional.softmax(model(img.to(device)), dim=1)
                     _, index = torch.topk(output, k=1, dim=1)
                     predictions.append(index.flatten())
@@ -434,10 +444,7 @@ def main():
     if use_masks:
         print("[Info]: Using masks\n")
 
-    """
-    Probable Hyperparameters:
-    batch size, learning rate, number of layers (just choose different variations of the neural network available) 
-    """
+    # Custom fastervit parameterization for the dataset
     if "faster_vit" in model_name:
         model = faster_vit_0_224(depths=[1, 1, 2, 1],
                                  drop_path_rate=0.0,
@@ -447,11 +454,13 @@ def main():
     else:
         model = create_model(model_name, num_classes=2)
 
+    # Naming based on the application of segmentation masks
     if use_masks:
         spec = model_name + "_masks"
     else:
         spec = model_name
 
+    # Train the model from scratch or load existing weights
     if pretrained_model == "":
 
         train_model(model, spec)
