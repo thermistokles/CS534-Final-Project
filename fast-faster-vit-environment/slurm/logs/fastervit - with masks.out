@@ -1,0 +1,77 @@
+C:\Users\Ivan\AppData\Local\Microsoft\WindowsApps\python3.10.exe D:\Users\Ivan\PycharmProjects\CS534-Final-Project\fast-faster-vit-environment\pytorch_executor.py -e 5 -um -m faster_vit_0_224 
+[Info]: Cuda modules loaded.
+
+[Info]: Using masks
+
+C:\Users\Ivan\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.10_qbz5n2kfra8p0\LocalCache\local-packages\Python310\site-packages\torch\functional.py:478: UserWarning: torch.meshgrid: in an upcoming release, it will be required to pass the indexing argument. (Triggered internally at  ..\aten\src\ATen\native\TensorShape.cpp:2895.)
+  return _VF.meshgrid(tensors, **kwargs)  # type: ignore[attr-defined]
+--------------------
+Training: faster_vit_0_224_masks
+--------------------
+
+  0%|          | 0/201 [00:00<?, ?it/s]--------------------
+Epoch: 1 out of 5
+--------------------
+100%|##########| 201/201 [12:44<00:00,  3.80s/it]
+  0%|          | 0/28 [00:00<?, ?it/s]
+Epoch Summary: Train Loss: 0.6371 Acc: 0.6478
+100%|##########| 28/28 [01:28<00:00,  3.15s/it]
+
+Epoch Summary: Evaluation Loss: 0.6459 Acc: 0.6862
+  0%|          | 0/201 [00:00<?, ?it/s]--------------------
+Epoch: 2 out of 5
+--------------------
+100%|##########| 201/201 [08:47<00:00,  2.63s/it]
+  0%|          | 0/28 [00:00<?, ?it/s]
+Epoch Summary: Train Loss: 0.4547 Acc: 0.8006
+100%|##########| 28/28 [01:09<00:00,  2.49s/it]
+
+Epoch Summary: Evaluation Loss: 0.4562 Acc: 0.8178
+--------------------
+Epoch: 3 out of 5
+--------------------
+100%|##########| 201/201 [09:04<00:00,  2.71s/it]
+  0%|          | 0/28 [00:00<?, ?it/s]
+Epoch Summary: Train Loss: 0.2956 Acc: 0.8848
+100%|##########| 28/28 [01:11<00:00,  2.55s/it]
+
+Epoch Summary: Evaluation Loss: 0.3338 Acc: 0.8701
+  0%|          | 0/201 [00:00<?, ?it/s]--------------------
+Epoch: 4 out of 5
+--------------------
+100%|##########| 201/201 [09:00<00:00,  2.69s/it]
+  0%|          | 0/28 [00:00<?, ?it/s]
+Epoch Summary: Train Loss: 0.2429 Acc: 0.9048
+100%|##########| 28/28 [01:10<00:00,  2.51s/it]
+
+Epoch Summary: Evaluation Loss: 0.3240 Acc: 0.8701
+  0%|          | 0/201 [00:00<?, ?it/s]--------------------
+Epoch: 5 out of 5
+--------------------
+100%|##########| 201/201 [08:53<00:00,  2.65s/it]
+  0%|          | 0/28 [00:00<?, ?it/s]
+Epoch Summary: Train Loss: 0.2454 Acc: 0.9038
+100%|##########| 28/28 [01:09<00:00,  2.49s/it]
+
+Epoch Summary: Evaluation Loss: 0.2413 Acc: 0.9172
+Best validation accuracy: 0.9172
+
+--------------------
+Testing: faster_vit_0_224_masks
+--------------------
+100%|##########| 28/28 [01:04<00:00,  2.30s/it]
+
+faster_vit_0_224_masks accuracy: 0.9126
+
+faster_vit_0_224_masks f1-score: 0.9125
+
+faster_vit_0_224_masks MCC: 0.8253
+
+Confusion Matrix:
+[[0.45689655 0.04310345]
+ [0.04425287 0.45574713]]
+
+faster_vit_0_224_masks ROC AUC Score: 0.9126
+
+
+Process finished with exit code 0
