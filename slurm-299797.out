@@ -1,0 +1,37 @@
+Importing required libraries
+Import completed
+Import inception_next_tiny
+Last layer of the model has been changed to output 1 class
+The program will run on  cuda:0
+#Reading the CSV Data for training
+Image Preprocessing
+Creating the training dataset
+Training...
+Epoch 1/3: 100%|██████████| 107/107 [04:13<00:00,  2.37s/it]
+Epoch 1/3 - Loss: 0.0146, Accuracy: 7758.55%
+Epoch 2/3: 100%|██████████| 107/107 [04:14<00:00,  2.38s/it]
+Epoch 2/3 - Loss: 0.0001, Accuracy: 7755.97%
+Epoch 3/3: 100%|██████████| 107/107 [04:18<00:00,  2.42s/it]
+Epoch 3/3 - Loss: 0.0010, Accuracy: 7759.95%
+Epoch 4/5: 100%|██████████| 107/107 [04:20<00:00,  2.45s/it]
+Epoch 4/5 - Loss: 0.0002, Accuracy: 7762.12%
+Epoch 5/5: 100%|██████████| 107/107 [04:19<00:00,  2.44s/it]
+Epoch 5/5 - Loss: 0.0003, Accuracy: 7760.78%
+Training completed
+Testing...
+Reading the CSV Data for testing
+Number of labels:  1372
+Number of images:  1372
+Creating the dataset
+Testing: 100%|██████████| 14/14 [00:33<00:00,  2.38s/it]
+Testing completed
+Accuracy: 1.0000
+F1 Score: 1.0000
+Confusion Matrix:
+[[1082    0]
+ [   0  290]]
+MCC Score: 1.0000
+
+InceptionNeXt ROC AUC Score: 1.0000
+
+Execution completed

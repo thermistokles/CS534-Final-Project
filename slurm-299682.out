@@ -1,0 +1,67 @@
+Importing required libraries
+Import completed
+Import inception_next_tiny
+Last layer of the model has been changed to output 1 class
+The program will run on  cuda:0
+#Reading the CSV Data for training
+Image Preprocessing
+Creating the training dataset
+Training...
+Epoch 1/20: 100%|██████████| 107/107 [02:38<00:00,  1.49s/it]
+Epoch 1/20 - Loss: 0.4008, Accuracy: 7758.55%
+Epoch 2/20: 100%|██████████| 107/107 [02:34<00:00,  1.45s/it]
+Epoch 2/20 - Loss: 0.3237, Accuracy: 7755.97%
+Epoch 3/20: 100%|██████████| 107/107 [02:34<00:00,  1.44s/it]
+Epoch 3/20 - Loss: 0.2772, Accuracy: 7759.95%
+Epoch 4/20: 100%|██████████| 107/107 [02:34<00:00,  1.45s/it]
+Epoch 4/20 - Loss: 0.2179, Accuracy: 7759.48%
+Epoch 5/20: 100%|██████████| 107/107 [02:35<00:00,  1.45s/it]
+Epoch 5/20 - Loss: 0.1576, Accuracy: 7758.08%
+Epoch 6/20: 100%|██████████| 107/107 [02:34<00:00,  1.45s/it]
+Epoch 6/20 - Loss: 0.1242, Accuracy: 7758.78%
+Epoch 7/20: 100%|██████████| 107/107 [02:34<00:00,  1.44s/it]
+Epoch 7/20 - Loss: 0.0892, Accuracy: 7758.08%
+Epoch 8/20: 100%|██████████| 107/107 [02:34<00:00,  1.44s/it]
+Epoch 8/20 - Loss: 0.0675, Accuracy: 7756.44%
+Epoch 9/20: 100%|██████████| 107/107 [02:34<00:00,  1.44s/it]
+Epoch 9/20 - Loss: 0.0508, Accuracy: 7758.55%
+Epoch 10/20: 100%|██████████| 107/107 [02:34<00:00,  1.45s/it]
+Epoch 10/20 - Loss: 0.0467, Accuracy: 7759.02%
+Epoch 11/20: 100%|██████████| 107/107 [02:34<00:00,  1.45s/it]
+Epoch 11/20 - Loss: 0.0413, Accuracy: 7758.08%
+Epoch 12/20: 100%|██████████| 107/107 [02:35<00:00,  1.45s/it]
+Epoch 12/20 - Loss: 0.0396, Accuracy: 7757.61%
+Epoch 13/20: 100%|██████████| 107/107 [02:34<00:00,  1.45s/it]
+Epoch 13/20 - Loss: 0.0255, Accuracy: 7757.85%
+Epoch 14/20: 100%|██████████| 107/107 [02:34<00:00,  1.45s/it]
+Epoch 14/20 - Loss: 0.0284, Accuracy: 7758.55%
+Epoch 15/20: 100%|██████████| 107/107 [02:34<00:00,  1.45s/it]
+Epoch 15/20 - Loss: 0.0312, Accuracy: 7758.55%
+Epoch 16/20: 100%|██████████| 107/107 [02:34<00:00,  1.45s/it]
+Epoch 16/20 - Loss: 0.0257, Accuracy: 7757.61%
+Epoch 17/20: 100%|██████████| 107/107 [02:34<00:00,  1.44s/it]
+Epoch 17/20 - Loss: 0.0152, Accuracy: 7757.14%
+Epoch 18/20: 100%|██████████| 107/107 [02:34<00:00,  1.44s/it]
+Epoch 18/20 - Loss: 0.0262, Accuracy: 7758.08%
+Epoch 19/20: 100%|██████████| 107/107 [02:34<00:00,  1.44s/it]
+Epoch 19/20 - Loss: 0.0215, Accuracy: 7758.31%
+Epoch 20/20: 100%|██████████| 107/107 [02:34<00:00,  1.44s/it]
+Epoch 20/20 - Loss: 0.0164, Accuracy: 7759.02%
+Training completed
+Testing...
+Reading the CSV Data for testing
+Number of labels:  1372
+Number of images:  1372
+Creating the dataset
+Testing: 100%|██████████| 14/14 [00:21<00:00,  1.52s/it]
+Testing completed
+Accuracy: 0.8535
+F1 Score: 0.6540
+Confusion Matrix:
+[[981 101]
+ [100 190]]
+MCC Score: 0.5611
+
+InceptionNeXt ROC AUC Score: 0.7809
+
+Execution completed

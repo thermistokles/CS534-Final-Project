@@ -1,3 +1,4 @@
+InceptionNeXt
 Preprocessing:
 Grayscale conversion
 Resize((224, 224))
@@ -18,6 +19,7 @@ MCC Score: 0.5127
 
 ===================================================================================
 
+InceptionNeXt small
 Preprocessing:
 Grayscale conversion
 Resize((224, 224))
@@ -36,8 +38,12 @@ Confusion Matrix:
  [100 190]]
 MCC Score: 0.5547
 
+[[0.9029 0.0970]
+ [0.3448 0.6551]]
+
 ===================================================================================
 
+InceptionNeXt small
 Preprocessing:
 Grayscale conversion
 Resize((224, 224))
@@ -59,6 +65,7 @@ MCC Score: 0.4990
 
 ===================================================================================
 
+InceptionNeXt small
 Preprocessing:
 Grayscale conversion
 Resize((224, 224))
@@ -77,3 +84,48 @@ Confusion Matrix:
 [[780 302]
  [ 35 255]]
 MCC Score: 0.4990
+
+===================================================================================
+
+InceptionNeXt tiny
+Preprocessing:
+Grayscale conversion
+Resize((224, 224))
+Normalize(mean=[0.5], std=[0.5])
+
+Parameters:
+num_epochs = 20
+lr = 0.001
+Opt = Adam
+Loss = BCEWithLogitsLoss
+
+Accuracy: 0.8484
+F1 Score: 0.6568
+Confusion Matrix:
+[[965 117]
+ [ 91 199]]
+MCC Score: 0.5606
+
+===================================================================================
+
+InceptionNeXt tiny
+Preprocessing:
+Grayscale conversion
+Resize((224, 224))
+Normalize(mean=[0.5], std=[0.5])
+Random undersampling
+
+Parameters:
+num_epochs = 20
+lr = 0.001
+Opt = Adam
+Loss = BCEWithLogitsLoss
+
+Accuracy: 0.7456
+F1 Score: 0.5956
+Confusion Matrix:
+[[766 316]
+ [ 33 257]]
+MCC Score: 0.4919
+
+===================================================================================
