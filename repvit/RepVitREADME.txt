@@ -1,0 +1,2 @@
+This file uses a modified main.py (from the RepViT) repo and _factory.py (from the timm library) in order to account for library version discrepencies.
+Unsure if the python script would execute without errors/warnings on other machines as a result.
